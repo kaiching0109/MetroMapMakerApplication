@@ -17,6 +17,7 @@ import static djf.settings.AppPropertyType.*;
 import static djf.settings.AppStartupConstants.FILE_PROTOCOL;
 import static djf.settings.AppStartupConstants.PATH_IMAGES;
 import java.net.URL;
+import javafx.scene.control.ToggleButton;
 import javafx.scene.control.Tooltip;
 
 /**
@@ -245,7 +246,7 @@ public class AppGUI {
      * @return A constructed, fully initialized button placed into its appropriate
      * pane container.
      */
-    public Button initChildButton(Pane toolbar, String icon, String tooltip, boolean disabled) {
+    public ToggleButton initChildToggleButton(Pane toolbar, String icon, String tooltip, boolean disabled) {
         PropertiesManager props = PropertiesManager.getPropertiesManager();
 	
 	// LOAD THE ICON FROM THE PROVIDED FILE
@@ -253,11 +254,51 @@ public class AppGUI {
         Image buttonImage = new Image(imagePath);
 	
 	// NOW MAKE THE BUTTON
-        Button button = new Button();
+        ToggleButton button = new ToggleButton();
         button.setDisable(disabled);
         button.setGraphic(new ImageView(buttonImage));
         Tooltip buttonTooltip = new Tooltip(props.getProperty(tooltip));
         button.setTooltip(buttonTooltip);
+	
+	// PUT THE BUTTON IN THE TOOLBAR
+        toolbar.getChildren().add(button);
+	
+	// AND RETURN THE COMPLETED BUTTON
+        return button;
+    }
+ 
+    /**
+     * This is a public helper method for initializing a simple button with
+     * an icon and tooltip and placing it into a toolbar.
+     * 
+     * @param toolbar Toolbar pane into which to place this button.
+     * 
+     * @param icon Icon image file name for the button.
+     * 
+     * @param tooltip Tooltip to appear when the user mouses over the button.
+     * 
+     * @param disabled true if the button is to start off disabled, false otherwise.
+     * 
+     * @return A constructed, fully initialized button placed into its appropriate
+     * pane container.
+     */
+    public Button initChildButton(Pane toolbar, String icon, String tooltip, boolean disabled) {
+        PropertiesManager props = PropertiesManager.getPropertiesManager();
+	
+        // NOW MAKE THE BUTTON
+        Button button = new Button();
+        button.setDisable(disabled);
+
+        Tooltip buttonTooltip = new Tooltip(props.getProperty(tooltip));
+        button.setTooltip(buttonTooltip);	
+        
+	// LOAD THE ICON FROM THE PROVIDED FILE
+        if(!icon.equals("")){
+            String imagePath = FILE_PROTOCOL + PATH_IMAGES + props.getProperty(icon);
+            Image buttonImage = new Image(imagePath);
+            button.setGraphic(new ImageView(buttonImage));
+        }  
+
 	
 	// PUT THE BUTTON IN THE TOOLBAR
         toolbar.getChildren().add(button);

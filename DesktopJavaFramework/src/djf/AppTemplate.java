@@ -83,7 +83,7 @@ public abstract class AppTemplate extends Application {
 	AppYesNoCancelDialogSingleton yesNoDialog = AppYesNoCancelDialogSingleton.getSingleton();
 	yesNoDialog.init(primaryStage);
 	PropertiesManager props = PropertiesManager.getPropertiesManager();
-
+        
 	try {
 	    // LOAD APP PROPERTIES, BOTH THE BASIC UI STUFF FOR THE FRAMEWORK
 	    // AND THE CUSTOM UI STUFF FOR THE WORKSPACE

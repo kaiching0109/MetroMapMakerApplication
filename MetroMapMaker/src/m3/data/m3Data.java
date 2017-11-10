@@ -22,6 +22,7 @@ import javafx.scene.shape.Shape;
 import static m3.data.m3State.SELECTING_SHAPE;
 import static m3.data.m3State.SIZING_SHAPE;
 import m3.gui.InfoRequireDialogSingleton;
+import m3.gui.LineStationListingDialogSingleton;
 import m3.gui.m3Workspace;
 
 /**
@@ -47,8 +48,6 @@ public class m3Data implements AppDataComponent {
 
     // FOR FILL AND OUTLINE
     Color currentFillColor;
-    Color currentOutlineColor;
-    double currentBorderWidth;
 
     // CURRENT STATE OF THE APP
     m3State state;
@@ -82,8 +81,6 @@ public class m3Data implements AppDataComponent {
 
 	// INIT THE COLORS
 	currentFillColor = Color.web(WHITE_HEX);
-	currentOutlineColor = Color.web(BLACK_HEX);
-	currentBorderWidth = 1;
 	
 	// THIS IS FOR THE SELECTED SHAPE
 	DropShadow dropShadowEffect = new DropShadow();
@@ -95,27 +92,48 @@ public class m3Data implements AppDataComponent {
 	dropShadowEffect.setRadius(15);
 	highlightedEffect = dropShadowEffect;
     }
-    
+
+    /**
+     * The accessor method for getting the collection of shapes.
+     * 
+     * @return shapes the collection of shapes
+     */    
     public ObservableList<Node> getShapes() {
 	return shapes;
     }
 
+    /**
+     * The accessor method for the background color.
+     * 
+     * @return backgroundColor the color of the background
+     */          
     public Color getBackgroundColor() {
 	return backgroundColor;
     }
-    
+ 
+    /**
+     * The accessor method for the shape color.
+     * 
+     * @return currentFillColor the color of the selected shape
+     */       
     public Color getCurrentFillColor() {
 	return currentFillColor;
     }
 
-    public double getCurrentBorderWidth() {
-	return currentBorderWidth;
-    }
-    
+    /**
+     * The accessor method for setting the collection of shapes.
+     * 
+     * @param initShapes the collection of shapes to set
+     */      
     public void setShapes(ObservableList<Node> initShapes) {
 	shapes = initShapes;
     }
-    
+
+    /**
+     * The accessor method for setting the background color of our workspace.
+     * 
+     * @param initBackgroundColor the color to set for the background
+     */        
     public void setBackgroundColor(Color initBackgroundColor) {
 	backgroundColor = initBackgroundColor;
 	m3Workspace workspace = (m3Workspace)app.getWorkspaceComponent();
@@ -125,33 +143,31 @@ public class m3Data implements AppDataComponent {
 	canvas.setBackground(background);
     }
 
+    /**
+     * The accessor method for setting the current-filled color of the 
+     * selected shape.
+     * 
+     * @param initColor the color to set for the selected shape
+     */      
     public void setCurrentFillColor(Color initColor) {
 	currentFillColor = initColor;
 	if (selectedShape != null)
 	    selectedShape.setFill(currentFillColor);
     }
 
-    public void setCurrentOutlineColor(Color initColor) {
-	currentOutlineColor = initColor;
-	if (selectedShape != null) {
-	    selectedShape.setStroke(initColor);
-	}
-    }
-
-    public void setCurrentOutlineThickness(int initBorderWidth) {
-	currentBorderWidth = initBorderWidth;
-	if (selectedShape != null) {
-	    selectedShape.setStrokeWidth(initBorderWidth);
-	}
-    }
-    
+    /**
+     * This function removes the selected shape
+     */       
     public void removeSelectedShape() {
 	if (selectedShape != null) {
 	    shapes.remove(selectedShape);
 	    selectedShape = null;
 	}
     }
-    
+
+    /**
+     * This function moves the selected shape to the back
+     */     
     public void moveSelectedShapeToBack() {
 	if (selectedShape != null) {
 	    shapes.remove(selectedShape);
@@ -169,7 +185,10 @@ public class m3Data implements AppDataComponent {
 	    }
 	}
     }
-    
+ 
+    /**
+     * This function moves the selected shape to the front
+     */         
     public void moveSelectedShapeToFront() {
 	if (selectedShape != null) {
 	    shapes.remove(selectedShape);
@@ -190,12 +209,15 @@ public class m3Data implements AppDataComponent {
 
 	// INIT THE COLORS
 	currentFillColor = Color.web(WHITE_HEX);
-	currentOutlineColor = Color.web(BLACK_HEX);
 	
 	shapes.clear();
 	((m3Workspace)app.getWorkspaceComponent()).getCanvas().getChildren().clear();
     }
 
+    /**
+     * This function helps sizing the selected shape\and change our state to 
+     * SIZING_SHAPE
+     */       
     public void selectSizedShape() {
 	if (selectedShape != null)
 	    unhighlightShape(selectedShape);
@@ -206,24 +228,46 @@ public class m3Data implements AppDataComponent {
 	    state = ((Draggable)selectedShape).getStartingState();
 	}
     }
-    
+
+    /**
+     * This function removes the highlight effect of the shape.
+     * 
+     * @param shape the shape that user wants to unhighlight
+     */
     public void unhighlightShape(Shape shape) {
-	selectedShape.setEffect(null);
+	shape.setEffect(null);
     }
-    
+
+    /**
+     * This function proves the highlight effect for the shape.
+     * 
+     * @param shape the shape that user wants to highlight
+     */    
     public void highlightShape(Shape shape) {
 	shape.setEffect(highlightedEffect);
     }
-
+    
+    /**
+     * This function helps creating a new line.
+     * 
+     * @param x  x is the x coordinate of the clicked position of the cursor.
+     * @param y  y is the y coordinate of the clicked position of the cursor.
+     */
     public void startNewLine(int x, int y) {
 	DraggableLine newLine = new DraggableLine();
 	newLine.start(x, y);
-        newLine.setColor(InfoRequireDialogSingleton.getSingleton().getLineColor().getValue());
+        newLine.setColor(InfoRequireDialogSingleton.getSingleton().getLineColorPicker().getValue());
         newLine.setName(InfoRequireDialogSingleton.getSingleton().getName());
 	newShape = newLine;
 	initNewShape();
     }
 
+    /**
+     * This function helps creating a new Station.
+     * 
+     * @param x  x is the x coordinate of the clicked position of the cursor.
+     * @param y  y is the y coordinate of the clicked position of the cursor.
+     */    
     public void startNewStation(int x, int y) {
 	DraggableStation newStation = new DraggableStation();
 	newStation.start(x, y);
@@ -231,17 +275,33 @@ public class m3Data implements AppDataComponent {
 	newShape = newStation;
 	initNewShape();
     }
-    
+
+    /**
+     * This function helps creating a new Image.
+     * 
+     * @param x  x is the x coordinate of the clicked position of the cursor.
+     * @param y  y is the y coordinate of the clicked position of the cursor.
+     */    
     public void startNewImage(int x, int y){
         
         
     }
-    
+
+    /**
+     * This function helps creating a new Label.
+     * 
+     * @param x  x is the x coordinate of the clicked position of the cursor.
+     * @param y  y is the y coordinate of the clicked position of the cursor.
+     */    
     public void startNewLabel(int x, int y){
         
         
     }
-
+    
+    /**
+     * This function helps creating a new shape by setting all the
+     * required variable for each specific shape
+     */ 
     public void initNewShape() {
 	// DESELECT THE SELECTED SHAPE IF THERE IS ONE
 	if (selectedShape != null) {
@@ -261,19 +321,57 @@ public class m3Data implements AppDataComponent {
 	// GO INTO SHAPE SIZING MODE
 	state = m3State.SIZING_SHAPE;
     }
-
+    
+    /**
+     * This method search for the selected line in the our collection 
+     * of lines, and place the line as an argument into our dialog.
+     * Finally show our diagram.
+     * 
+     * @param lineName the name of the line that is selected
+     * by user through comboBox
+     */   
+    public void ListSelectedLineStation(String lineName){
+        LineStationListingDialogSingleton stationListingDialog = LineStationListingDialogSingleton.getSingleton();
+        //SEARCH FOR LINE
+        //stationListingDialog.setLine(initLine);
+        //stationListingDialog.setLineName(lineName);
+        stationListingDialog.show("Metro Map Maker - Metro Line Stops", "");
+    }
+ 
+    /**
+     * The accessor method for getting the new created shape.
+     * 
+     * @return newShape the shape that is was last created.
+     */      
     public Shape getNewShape() {
 	return newShape;
     }
 
+    /**
+     * The accessor method for the selected shape.
+     * 
+     * @return selectedShape the shape that is currently selected.
+     */      
     public Shape getSelectedShape() {
 	return selectedShape;
     }
 
+    /**
+     * The accessor method for setting the selected shape.
+     * 
+     * @param initSelectedShape initSelectedShape is the shape to select
+     */       
     public void setSelectedShape(Shape initSelectedShape) {
 	selectedShape = initSelectedShape;
     }
 
+    /**
+     * The accessor method for getting the top shape according to the clicked
+     * position by cursor
+     * 
+     * @param x  x is the x coordinate of the clicked position of the cursor.
+     * @param y  y is the y coordinate of the clicked position of the cursor.
+     */      
     public Shape selectTopShape(int x, int y) {
 	Shape shape = getTopShape(x, y);
 	if (shape == selectedShape)
@@ -294,6 +392,13 @@ public class m3Data implements AppDataComponent {
 	return shape;
     }
 
+    /**
+     * The accessor method helps getting the top shape according to the clicked
+     * position by cursor
+     * 
+     * @param x  x is the x coordinate of the clicked position of the cursor.
+     * @param y  y is the y coordinate of the clicked position of the cursor.
+     */      
     public Shape getTopShape(int x, int y) {
 	for (int i = shapes.size() - 1; i >= 0; i--) {
 	    Shape shape = (Shape)shapes.get(i);
@@ -303,23 +408,49 @@ public class m3Data implements AppDataComponent {
 	}
 	return null;
     }
-
+    
+    /**
+     * The method adds a shape into our collection of shapes
+     * 
+     * @param shapeToAdd shape to add
+     */    
     public void addShape(Shape shapeToAdd) {
 	shapes.add(shapeToAdd);
     }
 
+    /**
+     * The method remove a shape from our collection of shapes
+     * 
+     * @param shapeToRemove shape to remove
+     */        
     public void removeShape(Shape shapeToRemove) {
 	shapes.remove(shapeToRemove);
     }
 
+    /**
+     * The accessor method for getting the current state of our dataManager
+     * 
+     * @return state state to show user action and how our system should react.
+     */  
     public m3State getState() {
 	return state;
     }
-
+    
+    /**
+     * The accessor method for setting the current state of our dataManager.
+     * 
+     * @param initState state to change
+     */
     public void setState(m3State initState) {
 	state = initState;
     }
 
+    /**
+     * This method is to check if our current state is same as our testState.
+     * 
+     * @param testState state to check
+     * @return true/ false if depending on the result of their equality
+     */
     public boolean isInState(m3State testState) {
 	return state == testState;
     }

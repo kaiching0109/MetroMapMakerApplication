@@ -34,19 +34,8 @@ import m3.data.DraggableImage;
 import m3.data.DraggableLabel;
 import m3.data.DraggableLine;
 import m3.data.DraggableStation;
-
 import m3.data.m3Data;
 
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
-/**
- *
- * @author aaronsuen
- */
 public class m3Files implements AppFileComponent{
 
 /**
@@ -97,7 +86,7 @@ public class m3Files implements AppFileComponent{
 	
 	// FIRST THE BACKGROUND COLOR
 	Color bgColor = dataManager.getBackgroundColor();
-	JsonObject bgColorJson = makeJsonColorObject(bgColor);
+	//JsonObject bgColorJson = makeJsonColorObject(bgColor);
 
 	// NOW BUILD THE JSON OBJCTS TO SAVE
 	JsonArrayBuilder arrayBuilder = Json.createArrayBuilder();
@@ -117,7 +106,8 @@ public class m3Files implements AppFileComponent{
 	    JsonObject shapeJson = Json.createObjectBuilder()
 		    .add(JSON_TYPE, type)
 		    .add(JSON_X, x)
-		    .add(JSON_Y, y)
+		
+                    .add(JSON_Y, y)
 		    .add(JSON_WIDTH, width)
 		    .add(JSON_HEIGHT, height)
 		    .add(JSON_FILL_COLOR, fillColorJson)
@@ -129,7 +119,7 @@ public class m3Files implements AppFileComponent{
 	
 	// THEN PUT IT ALL TOGETHER IN A JsonObject
 	JsonObject dataManagerJSO = Json.createObjectBuilder()
-		.add(JSON_BG_COLOR, bgColorJson)
+		//.add(JSON_BG_COLOR, bgColorJson)
 		.add(JSON_SHAPES, shapesArray)
 		.build();
 	
@@ -184,8 +174,8 @@ public class m3Files implements AppFileComponent{
 	JsonObject json = loadJSONFile(filePath);
 	
 	// LOAD THE BACKGROUND COLOR
-	Color bgColor = loadColor(json, JSON_BG_COLOR);
-	dataManager.setBackgroundColor(bgColor);
+	//Color bgColor = loadColor(json, JSON_BG_COLOR);
+	//dataManager.setBackgroundColor(bgColor);
 	
 	// AND NOW LOAD ALL THE SHAPES
 	JsonArray jsonShapeArray = json.getJsonArray(JSON_SHAPES);
@@ -281,6 +271,11 @@ public class m3Files implements AppFileComponent{
     /**
      * This method is provided to satisfy the compiler, but it
      * is not used by this application.
+     * 
+     * @param data The data management component for this application.
+     * 
+     * @param filePath Path (including file name/extension) to where
+     * to save the data to.
      */
     @Override
     public void exportData(AppDataComponent data, String filePath) throws IOException {
@@ -292,6 +287,11 @@ public class m3Files implements AppFileComponent{
     /**
      * This method is provided to satisfy the compiler, but it
      * is not used by this application.
+     * 
+     *@param data The data management component for this application.
+     * 
+     * @param filePath Path (including file name/extension) to where
+     * to save the data to.
      */
     @Override
     public void importData(AppDataComponent data, String filePath) throws IOException {

@@ -8,6 +8,22 @@
     @author ?
     @version 1.0
 */
+.button{
+    -fx-pref-height:40px;
+}
+
+.sizeOfFindButton{
+    -fx-pref-height:60px;
+    -fx-pref-width:60px;
+}
+
+.Hgap{
+    -fx-spacing: 10;
+}
+
+.Hgap_rightMost{
+    -fx-spacing: 100;
+}
 
 .color-picker {
     -fx-padding: 2px;

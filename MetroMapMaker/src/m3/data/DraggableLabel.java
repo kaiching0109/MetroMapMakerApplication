@@ -26,6 +26,9 @@ public class DraggableLabel extends Text implements Draggable{
     String fontFamily;
     String text;
 
+    /**
+     * Contrustor for initialing DraggableLabel with default data.
+     */    
     public DraggableLabel(){
         setFunction();
         setOpacity(1.0);
@@ -36,13 +39,25 @@ public class DraggableLabel extends Text implements Draggable{
         fontPosture = FontPosture.REGULAR;
         fontFamily = getFont().getFamily();
     }
-    
+ 
+    /**
+     * The method that helps creating an Label.
+     * 
+     * @param x  x is the x coordinate of the clicked position of the cursor.
+     * @param y  y is the y coordinate of the clicked position of the cursor.
+     */    
      @Override
     public void start(int x, int y) {
         startX = x;
 	startY = y;
     }
 
+    /**
+     * The method that helps sizing and dragging to move or create a Label.
+     * 
+     * @param x  x is the x coordinate of the clicked position of the cursor.
+     * @param y  y is the y coordinate of the clicked position of the cursor.
+     */       
     @Override
     public void drag(int x, int y) {
         //double diffX = x - getX() + 1;
@@ -54,87 +69,165 @@ public class DraggableLabel extends Text implements Draggable{
 	xProperty().set(newX);
 	yProperty().set(newY);
 	startX = x;
-	startY = y;
-        
+	startY = y; 
     }
-
+    
+    /**
+     * NOT SUPPORT
+     * @param x
+     * @param y 
+     */   
     @Override
     public void size(int x, int y) {	
     }
     
-    public void setFunction(){
+    
+    private void setFunction(){
         this.setOnMouseClicked(e -> {
             if (e.getClickCount() == 2)
                 showDialog();
         });
     }
 
+    /**
+     *  This method is used to set the location and size of the label
+     * @param initX x coordinate to set
+     * @param initY y coordinate to set
+     * @param initWidth width to set
+     * @param initHeight height to set
+     */    
     @Override
     public void setLocationAndSize(double initX, double initY, double initWidth, double initHeight) {
        	xProperty().set(initX);
 	yProperty().set(initY);
     }
-    
+
+    /**
+     * Accessor method that is used to set the font family of this DraggableLabel.
+     * 
+     * @param initText content to set.
+     */               
     public void setContent(String initText){
         text = initText;
         this.setText(text);  
     }
-    
+
+    /**
+     * Accessor method that is used to set the font family of this DraggableLabel.
+     * 
+     * @param initFontFamily font family to set
+     */               
     public void setFontFamily(String initFontFamily){
         fontFamily = initFontFamily;
         setFont(Font.font(fontFamily, fontWeight, fontPosture, fontSize));
     }
-    
+
+    /**
+     * Accessor method that is used to set the font size of this DraggableLabel.
+     * 
+     * @param initSize size to set
+     */           
     public void setFontSize(double initSize){
         fontSize = initSize;
         setFont(Font.font(fontFamily, fontWeight, fontPosture, fontSize));
     }
-    
+
+    /**
+     * Accessor method that is used to set the font posture of this DraggableLabel.
+     * 
+     * @param initFontPosture posture to set.
+     */       
     public void setFontPosture(FontPosture initFontPosture){
         fontPosture = initFontPosture;
         setFont(Font.font(fontFamily, fontWeight, fontPosture, fontSize));
     }
-    
+
+    /**
+     * Accessor method that is used to set the font weight of this DraggableLabel.
+     * 
+     * @param initFontWeight weight to set.
+     */      
     public void setFontWeight(FontWeight initFontWeight){
         fontWeight = initFontWeight;
         setFont(Font.font(getFont().getFamily(), fontWeight, fontPosture, fontSize));
     }
-    
+ 
+    /**
+     * Accessor method that is used to get the content of this DraggableLabel.
+     * 
+     * @return text text is the content of this DraggableLabel.
+     */    
     public String getContent(){
         return text;
     }
-
+    
+    /**
+     * Accessor method that is used to get the starting state of a DraggableLabel.
+     * 
+     * @return ADDING_LABEL state for creating label
+     */
     @Override
     public m3State getStartingState() {
         return m3State.ADDING_LABEL;
     }
 
+    /**
+     *  NOT SUPPORTED
+     * @return 
+     */    
     @Override
     public double getWidth() {
        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
-
+    
+    /**
+     *  NOT SUPPORTED
+     * @return 
+     */
     @Override
     public double getHeight() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
-    
+ 
+    /**
+     * The Accessor method to get the font weight of this DraggableLabel.
+     *
+     * @return fontWeight the font weight of this DraggableLabel.
+     */      
     public FontWeight getFontWeight(){
         return fontWeight;
     }
-    
+ 
+    /**
+     * The Accessor method to get the font posture of this DraggableLabel.
+     *
+     * @return fontPosture the font posture of this DraggableLabel.
+     */              
     public FontPosture getFontPosture(){
         return fontPosture;
     }
-    
+
+    /**
+     * The Accessor method to get the font family of this DraggableLabel.
+     *
+     * @return fontFamily the font family of this DraggableLabel.
+     */            
     public String getFontFamily(){
         return fontFamily;
     }
-    
+
+    /**
+     * The Accessor method to get the font size of this Draggable Label.
+     *
+     * @return fontSize the font size of this DraggableLabel.
+     */        
     public double getFontSize(){
         return fontSize;
     }
     
+    /**
+     *  This method prompts user to input the content of the label
+     */
     public void showDialog(){
         
         TextInputDialog dialog = new TextInputDialog("Text");
@@ -145,13 +238,22 @@ public class DraggableLabel extends Text implements Draggable{
         if (result.isPresent()){
             setContent(result.get());
         }
-    }    
+    } 
     
+    /**
+     * The Accessor method to get the shapeType.
+     *
+     * @return LABEL the shapeType of DraggableLabel
+     */        
     @Override
     public String getShapeType() {
 	return LABEL;
     }
-    
+ 
+    /**
+     * This method clone all properties of this DraggableLabel.
+     * @return the cloned DraggableLabel
+     */  
     @Override
     public Shape clone() {
         return null;

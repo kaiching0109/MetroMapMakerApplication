@@ -20,7 +20,10 @@ public class DraggableStation extends Ellipse implements Draggable{
     Color stationColor;
     
     DraggableLabel nameLabel;
-    
+
+    /**
+     * Contrustor for initialing DraggableStation with default data.
+     */       
     public DraggableStation() {
 	setCenterX(0.0);
 	setCenterY(0.0);
@@ -30,18 +33,35 @@ public class DraggableStation extends Ellipse implements Draggable{
 	startCenterX = 0.0;
 	startCenterY = 0.0;
     }
-    
+
+    /**
+     * Accessor method that is used to get the starting state of a DraggableStation.
+     * 
+     * @return ADDING_STATION state for creating station.
+     */        
     @Override
     public m3State getStartingState() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return m3State.ADDING_STATION;
     }
-    
+ 
+    /**
+     * The method that helps creating a station.
+     * 
+     * @param x  x is the x coordinate of the clicked position of the cursor.
+     * @param y  y is the y coordinate of the clicked position of the cursor.
+     */      
     @Override
     public void start(int x, int y) {
 	startCenterX = x;
 	startCenterY = y;
     }
-    
+
+    /**
+     * The method that helps sizing and dragging to move or create this Station.
+     * 
+     * @param x  x is the x coordinate of the clicked position of the cursor.
+     * @param y  y is the y coordinate of the clicked position of the cursor.
+     */     
     @Override
     public void drag(int x, int y) {
 	double diffX = x - startCenterX;
@@ -54,6 +74,12 @@ public class DraggableStation extends Ellipse implements Draggable{
 	startCenterY = y;
     }
     
+    /**
+     * The method that helps setting the stroke width of the station.
+     * 
+     * @param x  x is the x coordinate of the clicked position of the cursor.
+     * @param y  y is the y coordinate of the clicked position of the cursor.
+     */         
     @Override
     public void size(int x, int y) {
 	double width = x - startCenterX;
@@ -66,27 +92,55 @@ public class DraggableStation extends Ellipse implements Draggable{
 	setRadiusY(height / 2);	
 	
     }
-        
+ 
+    /**
+     * Accessor method that is used to get the x coordinate of this DraggableStation.
+     * 
+     * @return x coordinate of the center of the station
+     */     
     @Override
     public double getX() {
 	return getCenterX() - getRadiusX();
     }
 
+    /**
+     * Accessor method that is used to get the y coordinate of this DraggableStation.
+     * 
+     * @return y coordinate of the center of the station
+     */     
     @Override
     public double getY() {
 	return getCenterY() - getRadiusY();
     }
 
+    /**
+     *  This Accessor method is used to get the width of the station.
+     * 
+     * @return  width station width
+     */    
     @Override
     public double getWidth() {
 	return getRadiusX() * 2;
     }
-
+    
+    /**
+     *  This Accessor method is used to get the height of the station.
+     * 
+     * @return  height station height
+     */
     @Override
     public double getHeight() {
 	return getRadiusY() * 2;
     }    
-  
+
+   /**
+     *  This method is used to set the location and size of the station.
+     * 
+     * @param initX x coordinate to set
+     * @param initY y coordinate to set
+     * @param initWidth width to set
+     * @param initHeight height to set
+     */        
     @Override
     public void setLocationAndSize(double initX, double initY, double initWidth, double initHeight) {
 	setCenterX(initX + (initWidth/2));
@@ -94,11 +148,19 @@ public class DraggableStation extends Ellipse implements Draggable{
 	setRadiusX(initWidth/2);
 	setRadiusY(initHeight/2);
     }
-    
+
+    /**
+     * The Accessor method to set the name of this station.
+     * 
+     * @param initName the name to set
+     */    
     public void setName(String initName){
         name = initName;
     }
     
+    /**
+     * The Accessor method to set the DraggableLable of this station.
+     */
     public void setDraggableLable(){
         if(name != null){
             nameLabel = new DraggableLabel();
@@ -106,23 +168,45 @@ public class DraggableStation extends Ellipse implements Draggable{
         }
     }
     
+    /**
+     * The Accessor method to set the color of this station.
+     * 
+     * @param initColor color to set
+     */
     public void setColor(Color initColor){
         stationColor = initColor;
     }
     
+    /**
+     * The Accessor method to get this station color.
+     * 
+     * @return stationColor the color of this station
+     */
     public Color getColor(){
         return stationColor;
     }
     
+    /**
+     * This method moves the label clockwisely.
+     */
     public void moveLabel(){
         //https://stackoverflow.com/questions/12161277/how-to-rotate-a-vertex-around-a-certain-point
     }
     
+    /**
+     * The Accessor method to get the shapeType.
+     *
+     * @return STATION the shapeType of DraggableLabel
+     */           
     @Override
     public String getShapeType() {
 	return STATION;
     }
 
+    /**
+     * This method clone all properties of this DraggableStation.
+     * @return the cloned DraggableStation
+     */      
     @Override
     public Shape clone() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.

@@ -97,8 +97,8 @@ public class MapEditController {
     /**
      * This method handles the line that is chosen by the user through lineComboBox.
      */
-    public void processSelectingLine(){
-        
+    public void processSelectingLine(String lineName){
+        dataManager.ListSelectedLineStation(lineName);
     }
     
     /**
@@ -117,11 +117,15 @@ public class MapEditController {
         Scene scene = app.getGUI().getPrimaryScene();
         Stage stage = app.getGUI().getWindow();
         scene.setCursor(Cursor.CROSSHAIR);
-        InfoRequireDialogSingleton infoDialog = new InfoRequireDialogSingleton(LINE);               
+        InfoRequireDialogSingleton infoDialog = InfoRequireDialogSingleton.getSingleton();    
+        infoDialog.setType(LINE);
         infoDialog.init(stage);
+        infoDialog.show("Add New Line", "");
         // CHANGE THE STATE
-        dataManager.setState(m3State.STARTING_LINE);
-
+        if(infoDialog.getName() != null){
+            dataManager.setState(m3State.STARTING_LINE);
+            
+        }
         // ENABLE/DISABLE THE PROPER BUTTONS
         m3Workspace workspace = (m3Workspace)app.getWorkspaceComponent();
         workspace.reloadWorkspace(dataManager);
@@ -155,7 +159,8 @@ public class MapEditController {
      * that is chosen by the user through lineComboBox.
      */
     public void processStationsList(){
-        
+       
+       dataManager.ListSelectedLineStation(LINE);
     }      
     
     /**
@@ -165,7 +170,7 @@ public class MapEditController {
     public void processSelectLineThickness() {
         m3Workspace workspace = (m3Workspace)app.getWorkspaceComponent();
         int lineThickness = (int)workspace.getLineThicknessSlider().getValue();
-        dataManager.setCurrentOutlineThickness(lineThickness);
+        //dataManager.setCurrentOutlineThickness(lineThickness);
         app.getGUI().updateToolbarControls(false);
     }  
     
@@ -194,12 +199,13 @@ public class MapEditController {
         Scene scene = app.getGUI().getPrimaryScene();
         Stage stage = app.getGUI().getWindow();
         scene.setCursor(Cursor.CROSSHAIR);
-        InfoRequireDialogSingleton infoDialog = new InfoRequireDialogSingleton(STATION);               
+        InfoRequireDialogSingleton infoDialog = InfoRequireDialogSingleton.getSingleton(); 
+        infoDialog.setType(STATION);
         infoDialog.init(stage);
+        infoDialog.show("Add New Station", "");        
         // CHANGE THE STATE
-
-        // CHANGE THE STATE
-        dataManager.setState(m3State.ADDING_STATION);
+        if(infoDialog.getName() != null)       
+            dataManager.setState(m3State.ADDING_STATION);
 
         // ENABLE/DISABLE THE PROPER BUTTONS
         m3Workspace workspace = (m3Workspace)app.getWorkspaceComponent();

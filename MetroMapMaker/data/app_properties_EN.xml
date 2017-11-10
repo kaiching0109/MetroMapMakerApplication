@@ -10,6 +10,7 @@
     <property_list>
         <property name="APP_TITLE"	    value="goLogoLo"></property>
 	<property name="APP_LOGO"	    value="goLogoLo.png"></property>
+        <property name="APP_ICON"           value="m3Icon.png"></property>
 	<property name="APP_PATH_CSS"	    value="/m3/css/"></property>
 	<property name="APP_CSS"	    value="m3_style.css"></property>
 
@@ -23,6 +24,17 @@
         <property name="LOAD_ICON"	    value="Load.png"></property>
         <property name="SAVE_ICON"	    value="Save.png"></property>
         <property name="EXIT_ICON"          value="Exit.png"></property> 
+        <property name="ADD_ICON"           value="add.png"></property> 
+        <property name="REMOVE_ICON"        value="remove.png"></property>
+        <property name="LIST_ICON"          value="list.png"></property> 
+        <property name="ROTATE_ICON"        value="rotate.png"></property> 
+        <property name="FIND_ICON"          value="find.png"></property> 
+        <property name="BOLD_ICON"          value="Bold.png"></property> 
+        <property name="ITALICS_ICON"       value="Italics.png"></property> 
+        <property name="ZOOMIN_ICON"        value="zoom-in.png"></property> 
+        <property name="ZOOMOUT_ICON"       value="zoom-out.png"></property> 
+        <property name="INC_ICON"           value="increase.png"></property> 
+        <property name="DEC_ICON"           value="decrease.png"></property> 
         
         <!-- TOOLTIPS FOR BUTTONS -->
         <property name="NEW_TOOLTIP"		value="Create a New Logo"></property>
@@ -30,7 +42,34 @@
         <property name="SAVE_TOOLTIP"		value="Save this Logo"></property>
         <property name="EXIT_TOOLTIP"		value="Exit the Application"></property>
         
-        <!-- ERROR MESSAGES -->
+        <!-- TOOLTIPS FOR EDITOR BUTTONS -->
+        <property name="LINE_EDITOR_TOOLTIP"                value="Edit Line"></property>
+        <property name="ADD_LINE_TOOLTIP"                   value="Add Line"></property>
+        <property name="REMOVE_LINE_TOOLTIP"                value="Remove Line"></property>               
+        <property name="ADD_STATION_ON_LINE_TOOLTIP"        value="Add Station to Line"></property>
+        <property name="REMOVE_STATION_FROM_LINE_TOOLTIP"   value="Remove Station from Line"></property>
+        <property name="LIST_TOOLTIP"                       value="Stations List"></property>
+        <property name="THICKNESS_SLIDER_TOOLTIP"           value="Line Thickness"></property>
+        <property name="ADD_STATION_TOOLTIP"                value="Add Station"></property>
+        <property name="REMOVE_STATION_TOOLTIP"             value="Remove Station"></property>
+        <property name="SNAP_TOOLTIP"                       value="Snap to Grid"></property>
+        <property name="MOVE_LABEL_TOOLTIP"                 value="Move Label"></property>
+        <property name="ROTATE_TOOLTIP"                     value="Rotate Label"></property>
+        <property name="RADIUS_SLIDER_TOOLTIP"              value="Station Radius"></property>
+        <property name="FIND_TOOLTIP"                       value="Find Route"></property>
+        <property name="IMAGE_BACKGROUND_TOOLTIP"           value="Set Image Background"></property>
+        <property name="ADD_IMAGE_TOOLTIP"                  value="Insert Image"></property>
+        <property name="ADD_LABEL_TOOLTIP"                  value="Add Label"></property>
+        <property name="REMOVE_ELEMENT_TOOLTIP"             value="Remove Element"></property>
+        <property name="BOLD_TOOLTIP"                       value="Bold"></property>
+        <property name="ITALICS_TOOLTIP"                    value="Italics"></property>
+        <property name="ZOOMIN_TOOLTIP"                     value="Zoom In"></property>
+        <property name="ZOOMOUT_TOOLTIP"                    value="Zoom Out"></property>
+        <property name="INC_TOOLTIP"                        value="Increase Map Size"></property>
+        <property name="DEC_TOOLTIP"                        value="Decrease Map Size"></property>
+    
+
+<!-- ERROR MESSAGES -->
         <property name="CLOSE_BUTTON_TEXT"              value="Close"></property>
 
         <property name="NEW_ERROR_MESSAGE"              value="An error occured creating New work."></property>
