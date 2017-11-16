@@ -7,6 +7,7 @@ import javafx.stage.Stage;
 import properties_manager.PropertiesManager;
 import static djf.settings.AppPropertyType.*;
 import static djf.settings.AppStartupConstants.*;
+import jtps.jTPS;
 import properties_manager.InvalidXMLFileFormatException;
 
 /**
@@ -35,6 +36,8 @@ public abstract class AppTemplate extends Application {
 
     // THE COMPONENT FOR THE GUI WORKSPACE
     protected AppWorkspaceComponent workspaceComponent;
+    
+    protected jTPS tps;
         
     // THIS METHOD MUST BE OVERRIDDEN WHERE THE CUSTOM BUILDER OBJECT
     // WILL PROVIDE THE CUSTOM APP COMPONENTS
@@ -64,6 +67,12 @@ public abstract class AppTemplate extends Application {
     public AppWorkspaceComponent getWorkspaceComponent() { return workspaceComponent; }
     
     /**
+     * Accessor method for the transaction processing system.
+     */
+    public jTPS getTPS() { return tps; }   
+    
+    
+    /**
      *  Accessor for the gui. Note that the GUI would contain the workspace.
      */
     public AppGUI getGUI() { return gui; }
@@ -76,7 +85,7 @@ public abstract class AppTemplate extends Application {
      * @param primaryStage This application's window.
      */
     @Override
-    public void start(Stage primaryStage) {
+            public void start(Stage primaryStage) {
 	// LET'S START BY INITIALIZING OUR DIALOGS
 	AppMessageDialogSingleton messageDialog = AppMessageDialogSingleton.getSingleton();
 	messageDialog.init(primaryStage);
@@ -90,6 +99,8 @@ public abstract class AppTemplate extends Application {
 	    boolean success = loadProperties(APP_PROPERTIES_FILE_NAME);
 	    
 	    if (success) {
+                // THIS IS THE TRANSACTION PROCESSING SYSTEM THAT WE'LL BE USING
+                tps = new jTPS();
                 // GET THE TITLE FROM THE XML FILE
 		String appTitle = props.getProperty(APP_TITLE);
                 

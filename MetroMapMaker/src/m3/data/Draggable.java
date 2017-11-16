@@ -25,6 +25,8 @@ public interface Draggable {
     public double getWidth();
     public double getHeight();
     public void setLocationAndSize(double initX, double initY, double initWidth, double initHeight);
-    public String getShapeType();
+    public void setName(String initName);
+    public String getNodeType();
+    public String getName();
     public Shape clone();
 }

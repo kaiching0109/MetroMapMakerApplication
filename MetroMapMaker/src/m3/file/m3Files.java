@@ -90,11 +90,11 @@ public class m3Files implements AppFileComponent{
 
 	// NOW BUILD THE JSON OBJCTS TO SAVE
 	JsonArrayBuilder arrayBuilder = Json.createArrayBuilder();
-	ObservableList<Node> shapes = dataManager.getShapes();
+	ObservableList<Node> shapes = dataManager.getM3Nodes();
 	for (Node node : shapes) {
 	    Shape shape = (Shape)node;
 	    Draggable draggableShape = ((Draggable)shape);
-	    String type = draggableShape.getShapeType();
+	    String type = draggableShape.getNodeType();
 	    double x = draggableShape.getX();
 	    double y = draggableShape.getY();
 	    double width = draggableShape.getWidth();
@@ -133,7 +133,7 @@ public class m3Files implements AppFileComponent{
 	jsonWriter.close();
 
 	// INIT THE WRITER
-	OutputStream os = new FileOutputStream(filePath);
+	OutputStream os = new FileOutputStream(filePath + ".json");
 	JsonWriter jsonFileWriter = Json.createWriter(os);
 	jsonFileWriter.writeObject(dataManagerJSO);
 	String prettyPrinted = sw.toString();
@@ -177,13 +177,16 @@ public class m3Files implements AppFileComponent{
 	//Color bgColor = loadColor(json, JSON_BG_COLOR);
 	//dataManager.setBackgroundColor(bgColor);
 	
+        /*
 	// AND NOW LOAD ALL THE SHAPES
 	JsonArray jsonShapeArray = json.getJsonArray(JSON_SHAPES);
+        
 	for (int i = 0; i < jsonShapeArray.size(); i++) {
 	    JsonObject jsonShape = jsonShapeArray.getJsonObject(i);
 	    Shape shape = loadShape(jsonShape);
-	    dataManager.addShape(shape);
+	    dataManager.addNode(shape);
 	}
+        */
     }
     
     /**

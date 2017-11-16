@@ -19,6 +19,8 @@ public enum AppPropertyType {
     PREF_WIDTH,
     PREF_HEIGHT,
     START_MAXIMIZED,
+    DEFAULT_NODE_X,
+    DEFAULT_NODE_Y,
     
     // FOR FINDING THE CSS FILE
     APP_CSS,
@@ -50,7 +52,9 @@ public enum AppPropertyType {
     SAVE_TOOLTIP,
     SAVE_AS_TOOLTIP,
     EXPORT_TOOLTIP,
-    EXIT_TOOLTIP,
+    UNDO_TOOLTIP,
+    REDO_TOOLTIP,
+    ABOUT_TOOLTIP,
     
     // EDIT TOOLBAR TOOLTIPS
     LINE_EDITOR_TOOLTIP,

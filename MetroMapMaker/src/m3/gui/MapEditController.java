@@ -24,12 +24,27 @@ import javafx.scene.paint.Color;
 import m3.data.m3Data;
 import m3.data.m3State;
 import djf.AppTemplate;
+import static djf.settings.AppPropertyType.APP_LOGO;
+import static djf.settings.AppStartupConstants.FILE_PROTOCOL;
+import static djf.settings.AppStartupConstants.PATH_IMAGES;
+import javafx.scene.Node;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.stage.Stage;
+import jtps.jTPS;
 import static m3.data.Draggable.LINE;
 import static m3.data.Draggable.STATION;
+import m3.data.DraggableLine;
+import m3.data.DraggableStation;
+import static m3.data.m3State.ADD_STATION_MODE;
+import static m3.data.m3State.REMOVE_STATION_MODE;
+import properties_manager.PropertiesManager;
 
 /**
  * This class responds to interactions with other UI logo editing controls.
+ * 
  * @author Kai
  */
 public class MapEditController {
@@ -41,27 +56,23 @@ public class MapEditController {
         app = initApp;
         dataManager = (m3Data)app.getDataComponent();
     }
-    
-    /**
-     * This method handles the request for saving as
-     * 
-     */
-    public void processSaveAsRequest() {
-        
-    }
-    
-    /**
-    * This method handles the request for exporting
-     */
-    public void processExportRequest() {
-        
-    }
-    
+
     /**
      * This method handles request of showing our program information.
      */
     public void processAboutButtonRequest() {
-        
+        PropertiesManager props = PropertiesManager.getPropertiesManager();
+        Alert aboutDialog = new Alert(AlertType.INFORMATION);
+        aboutDialog.setTitle("About Us");
+        Image image = new Image(FILE_PROTOCOL + PATH_IMAGES + props.getProperty(APP_LOGO));
+        ImageView logo = new ImageView(image);        
+        aboutDialog.setGraphic(logo);
+        aboutDialog.setHeaderText("Information:");
+        aboutDialog.setContentText("Metro Map Maker\n"
+                                   + "Version: 0.0.1\n"
+                                   + "Published date: 11/12/2017\n"
+                                   + "Build id: I-WANT-TO-GET-A\n");
+        aboutDialog.showAndWait();        
     }
     /**
      * This method handles the response for selecting either the
@@ -84,21 +95,25 @@ public class MapEditController {
      * This method redo user behavior on the canvas.
      */    
     public void processRedo(){
-        
+        jTPS tps = app.getTPS();
+        tps.doTransaction();
+        app.getGUI().updateToolbarControls(false);
     }
  
     /**
      * This method undo user behavior on the canvas.
      */    
     public void processUndo(){
-        
+        jTPS tps = app.getTPS();
+        tps.undoTransaction();
+        app.getGUI().updateToolbarControls(false);        
     }
 
     /**
      * This method handles the line that is chosen by the user through lineComboBox.
      */
-    public void processSelectingLine(String lineName){
-        dataManager.ListSelectedLineStation(lineName);
+    public void processSelectingLine(){
+        dataManager.ListSelectedLineStation();
     }
     
     /**
@@ -106,7 +121,7 @@ public class MapEditController {
      * the selected line through lineComboBox.
      */
      public void processLineEditting(){
-         
+         dataManager.showLineEditDialog();
      }
     
     /**
@@ -135,32 +150,46 @@ public class MapEditController {
      * This method removes the line that is chosen by the user through lineComboBox.
      */
     public void processRemovingSelectedLine(){
-        
+        m3Workspace workspace = (m3Workspace)app.getWorkspaceComponent();
+        m3Data data = (m3Data)app.getDataComponent();
+        String lineName = (String)workspace.getLineNameBox().getValue();
+        if(data.searchNode(lineName))
+            data.removeSelectedNode();     
     }
     
     /**
-     * This method adds station on the selected line that 
-     * is chosen by the user through lineComboBox.
+     * This method change the state to ADD_STATION_MODE and helps adding station 
+     * on the selected line that is chosen by the user through lineComboBox.
      */
     public void processAddStationOnSelectedLine(){
-        
+        m3Workspace workspace = (m3Workspace)app.getWorkspaceComponent();
+        m3Data data = (m3Data)app.getDataComponent();
+        String lineName = (String)workspace.getLineNameBox().getValue();        
+        if(data.searchNode(lineName)){
+            data.setState(ADD_STATION_MODE);
+        }                 
     }    
     
     /**
-     * This method remove station on the selected line that 
-     * is chosen by the user through lineComboBox.
+     * This method change the state to REMOVE_STATION_MOVE and helps
+     * remove station on the selected line that is chosen by the user through 
+     * lineComboBox.
      */
     public void processRemoveStationOnSelectedLine(){
-        
+        m3Workspace workspace = (m3Workspace)app.getWorkspaceComponent();
+        m3Data data = (m3Data)app.getDataComponent();
+        String lineName = (String)workspace.getLineNameBox().getValue();        
+        if(data.searchNode(lineName)){
+            data.setState(REMOVE_STATION_MODE);
+        }               
     }    
     
     /**
      * This method shows station(s) that is on the selected line 
      * that is chosen by the user through lineComboBox.
      */
-    public void processStationsList(){
-       
-       dataManager.ListSelectedLineStation(LINE);
+    public void processStationsList(){      
+       dataManager.ListSelectedLineStation();
     }      
     
     /**
@@ -169,9 +198,15 @@ public class MapEditController {
      */
     public void processSelectLineThickness() {
         m3Workspace workspace = (m3Workspace)app.getWorkspaceComponent();
-        int lineThickness = (int)workspace.getLineThicknessSlider().getValue();
-        //dataManager.setCurrentOutlineThickness(lineThickness);
+        m3Data data = (m3Data)app.getDataComponent();
+        int lineThickness = (int)workspace.getLineThicknessSlider().getValue();  
+        String lineName = (String)workspace.getLineNameBox().getValue(); 
+        if(data.searchNode(lineName)){   
+            DraggableLine selectLine = (DraggableLine)data.getSelectedNode();
+            selectLine.setStrokeWidth(lineThickness);
+        } 
         app.getGUI().updateToolbarControls(false);
+        workspace.reloadWorkspace(dataManager);
     }  
     
     /**
@@ -231,6 +266,13 @@ public class MapEditController {
      * This method allows user to move the selected station label.
      */    
     public void processMovingLabel(){
+        m3Workspace workspace = (m3Workspace)app.getWorkspaceComponent();
+        m3Data data = (m3Data)app.getDataComponent();
+        String stationName = (String)workspace.getStationNameBox().getValue();        
+        if(data.searchNode(stationName)){
+            DraggableStation selectedStation = (DraggableStation)data.getSelectedNode();
+            selectedStation.moveLabel();
+        }                       
         //get selected station and do moveLabel()
    }
   
@@ -245,7 +287,17 @@ public class MapEditController {
      * This method allows user to modify the radius of the selected station.
      */
     public void processSelectedStationRadius(){
-        
+       m3Workspace workspace = (m3Workspace)app.getWorkspaceComponent();
+        m3Data data = (m3Data)app.getDataComponent();
+        int radius = (int)workspace.getStationRadiusSlider().getValue();  
+        String stationName = (String)workspace.getStationNameBox().getValue(); 
+        if(data.searchNode(stationName)){   
+            DraggableStation selectStation = (DraggableStation)data.getSelectedNode();
+            selectStation.setRadiusX(radius);
+            selectStation.setRadiusY(radius);
+        } 
+        app.getGUI().updateToolbarControls(false);
+        workspace.reloadWorkspace(dataManager);        
     }
     
     /**
@@ -268,7 +320,22 @@ public class MapEditController {
      * searchingComboBox1 to searchingComboBox2.
      */      
     public void processFindingRoute(){
-        
+        DraggableStation fromStation = null;
+        DraggableStation toStation = null;
+        m3Workspace workspace = (m3Workspace)app.getWorkspaceComponent();
+        m3Data data = (m3Data)app.getDataComponent();
+        String searchStation1Name = (String)workspace.getStationSearchingBar1().getValue();
+        String searchStation2Name = (String)workspace.getStationSearchingBar1().getValue();
+        if(data.searchNode(searchStation1Name)){
+            DraggableStation searchingStation1 = (DraggableStation)data.getSelectedNode();
+        }    
+         if(data.searchNode(searchStation2Name)){
+            DraggableStation searchingStation2 = (DraggableStation)data.getSelectedNode();
+        }
+        RouteDialogSingleton routeDialog = RouteDialogSingleton.getSingleton();
+        routeDialog.setStations(fromStation, toStation);
+        routeDialog.setInfo();
+        routeDialog.show("Metro Map Maker - Route", "");
     }
  
     /**
@@ -327,41 +394,6 @@ public class MapEditController {
      * This method removes the any selected element.
      */      
     public void processRemovingElement(){
-        
-    }
-    
-    /**
-     * This method fills the color of the selected label.
-     */
-    public void processFillingFontColor(){
-        
-    }
-    
-    /**
-     * This method bolds the selected label.
-     */
-    public void processBoldLabel(){
-        
-    }
-   
-    /**
-     * This method italics the selected label.
-     */
-    public void processItalicLabel(){
-        
-    }
-    
-    /**
-     * This method changes the size of the selected label.
-     */
-    public void processLabelFontSize(){
-        
-    }
-    
-    /**
-     * This method changes the font family of the selected label.
-     */
-    public void processLabelFontFamily(){
         
     }
     

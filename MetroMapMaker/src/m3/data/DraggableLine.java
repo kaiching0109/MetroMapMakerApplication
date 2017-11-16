@@ -1,4 +1,4 @@
-/*
+    /*
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
@@ -121,6 +121,7 @@ public class DraggableLine extends Line implements Draggable{
     
     /**
      * This method is used to set the list of stations.
+     * 
      * @param initList the list of stations to set.
      */
     public void setListOfStations(ArrayList<DraggableStation> initList){
@@ -130,6 +131,7 @@ public class DraggableLine extends Line implements Draggable{
  
     /**
      * This method is used to get the list of stations on this line.
+     * 
      * @return listOfStations the list of stations on this line.
      */    
     public ArrayList<DraggableStation> getListOfStations(){
@@ -153,6 +155,10 @@ public class DraggableLine extends Line implements Draggable{
         lineLabel1.setContent(name);
         lineLabel1.setX(startX);
         lineLabel1.setY(startY);
+        lineLabel1.setOnMousePressed(e->{
+            setStartX(lineLabel1.getX());
+            setStartY(lineLabel1.getY());
+        });
     }
     
     /**
@@ -162,7 +168,11 @@ public class DraggableLine extends Line implements Draggable{
         lineLabel2 = new DraggableLabel();
         lineLabel2.setContent(name);
         lineLabel2.setX(endX);
-        lineLabel2.setY(endY);        
+        lineLabel2.setY(endY);     
+        lineLabel2.setOnMousePressed(e->{
+            setEndX(lineLabel2.getX());
+            setEndY(lineLabel2.getY());
+        });        
     }
  
     /**
@@ -207,7 +217,7 @@ public class DraggableLine extends Line implements Draggable{
      * @return LINE the shapeType of DraggableLabel
      */        
     @Override
-    public String getShapeType() {
+    public String getNodeType() {
         return LINE;
     }
 
@@ -241,10 +251,11 @@ public class DraggableLine extends Line implements Draggable{
     }
     
     /**
-     * The Accessor method to get the name of the line.
+     * The Accessor method to get the name of this line.
      * 
-     * @return name 
-     */
+     * @return name the name of this line.
+     */        
+    @Override
     public String getName(){
         return name;
     }

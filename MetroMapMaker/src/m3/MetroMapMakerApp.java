@@ -1,4 +1,4 @@
-package m3;
+    package m3;
 
 /*
  * To change this license header, choose License Headers in Project Properties.
@@ -13,9 +13,11 @@ import static djf.settings.AppPropertyType.LOAD_ERROR_TITLE;
 import java.io.IOException;
 import java.util.Locale;
 import static javafx.application.Application.launch;
+import javafx.stage.Stage;
 import m3.data.m3Data;
 import m3.file.m3Files;
 import m3.gui.AppWelcomeDialogSingleton;
+import m3.gui.LineEditDialogSingleton;
 import m3.gui.m3Workspace;
 import properties_manager.PropertiesManager;
 
@@ -33,7 +35,7 @@ public class MetroMapMakerApp extends AppTemplate{
      * retrieving user recent work / creating new work.
      */
     @Override
-    public void buildAppComponentsHook() {
+        public void buildAppComponentsHook() {
         // CONSTRUCT ALL THREE COMPONENTS AND WELCOME DIALOG.
         // NOTE THAT FOR THIS APP, THE WORKSPACE NEEDS THE DATA COMPONENT 
         // TO EXIST ALREADY WHEN IT IS CONSTRUCTED, AND THE DATA COMPONENT NEEDS 
@@ -43,10 +45,11 @@ public class MetroMapMakerApp extends AppTemplate{
         AppWelcomeDialogSingleton appWelcomeDialog = AppWelcomeDialogSingleton.getSingleton();
         appWelcomeDialog.init(gui.getWindow(), this);       
         workspaceComponent = new m3Workspace(this);
+        LineEditDialogSingleton lineEditDialog = LineEditDialogSingleton.getSingleton();
+        lineEditDialog.init(gui.getWindow(), this);        
         appWelcomeDialog.show("Welcome to the Metro Map Maker", "");
         try {
             String selection = appWelcomeDialog.getSelection();
-            System.out.println(selection);
             if(selection != null){
                 fileComponent.loadData(dataComponent, selection);
 		workspaceComponent.activateWorkspace(getGUI().getAppPane());              
@@ -55,7 +58,7 @@ public class MetroMapMakerApp extends AppTemplate{
             PropertiesManager props = PropertiesManager.getPropertiesManager();
             appWelcomeDialog.show(props.getProperty(LOAD_ERROR_TITLE), props.getProperty(LOAD_ERROR_MESSAGE));
         }
-
+        
     }
     
     /**

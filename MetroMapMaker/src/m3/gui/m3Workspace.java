@@ -54,6 +54,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.event.EventHandler;
 import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
@@ -70,9 +71,14 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Ellipse;
 import javafx.scene.shape.Shape;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontPosture;
+import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import static m3.css.m3Style.CLASS_BUTTON;
@@ -80,6 +86,7 @@ import static m3.css.m3Style.CLASS_BUTTON_HGAP;
 import static m3.css.m3Style.CLASS_BUTTON_HGAP_RIGHTMOST;
 import static m3.css.m3Style.CLASS_COLOR_CHOOSER_CONTROL;
 import static m3.css.m3Style.CLASS_EDIT_TOOLBAR;
+//import static m3.css.m3Style.CLASS_EDIT_TOOLBAR_BUTTON_SIZE;
 import static m3.css.m3Style.CLASS_EDIT_TOOLBAR_ROW;
 import static m3.css.m3Style.CLASS_FIND_BUTTON_SIZE;
 import static m3.css.m3Style.CLASS_RENDER_CANVAS;
@@ -103,13 +110,6 @@ public class m3Workspace extends AppWorkspaceComponent{
 
     // IT KNOWS THE GUI IT IS PLACED INSIDE
     AppGUI gui;
-    
-    // BUTTONS FOR OUR APPGUI
-    Button saveAsButton;
-    Button exportButton;
-    Button undoButton;
-    Button redoButton;
-    Button aboutButton;
 
     // HAS ALL THE CONTROLS FOR EDITING
     ScrollPane editToolScrollbar;
@@ -124,6 +124,9 @@ public class m3Workspace extends AppWorkspaceComponent{
     HBox row1HBox1;
     Label lineLabel;
     ComboBox lineNameBox; 
+    StackPane stackPaneForLine;
+    Text colorHexForLine;
+    Ellipse ellipseForLine;
     Button editLineButton; //show the editWindow 
     
     HBox row1HBox2;
@@ -142,6 +145,9 @@ public class m3Workspace extends AppWorkspaceComponent{
     Label stationLabel;
     ComboBox stationNameBox;
     ColorPicker stationColorPicker;  
+    StackPane stackPaneForStation;
+    Ellipse ellipseForStation;
+    Text colorHexForStation;
     
     HBox row2HBox2;
     Button addStationButton;
@@ -166,7 +172,10 @@ public class m3Workspace extends AppWorkspaceComponent{
     
     HBox row4HBox1;
     Label decorLabel;
-    ColorPicker bgColorPicker;    
+    ColorPicker bgColorPicker; 
+    StackPane stackPaneForBackground;
+    Text colorHexForBackground;
+    Ellipse ellipseForBackground;
     
     HBox row4HBox2;
     Button imageBackgroundButton;
@@ -180,6 +189,9 @@ public class m3Workspace extends AppWorkspaceComponent{
     HBox row5HBox1;
     Label fontLabel;
     ColorPicker fontColorPicker; 
+    StackPane stackPaneForFont;
+    Text colorHexForFont;    
+    Ellipse ellipseForFont;
     
     HBox row5HBox2;
     ToggleButton boldButton;
@@ -372,6 +384,8 @@ public class m3Workspace extends AppWorkspaceComponent{
 	editToolbar = new VBox();
         createGrid();
         
+        //GUI BUTTONS ON THE TOP 
+        
         // FIRST ROW
         metroLinesToolbar = new VBox();
 
@@ -380,9 +394,14 @@ public class m3Workspace extends AppWorkspaceComponent{
         lineNameBox = new ComboBox(); 
         space = new Pane();
         row1HBox1.setHgrow(space, Priority.ALWAYS);
-        row1HBox1.getChildren().addAll(lineLabel, lineNameBox, space);
-        editLineButton = gui.initChildButton(row1HBox1, LINE_EDITOR_TOOLTIP.toString(), SAVE_AS_ICON.toString(), true);
+        stackPaneForLine = new StackPane();
+        editLineButton = gui.initChildButton(stackPaneForLine, "", LINE_EDITOR_TOOLTIP.toString(), true);
+        ellipseForLine = new Ellipse(20, 20);
+        colorHexForFont = new Text();
+        stackPaneForLine.getChildren().addAll(ellipseForLine, colorHexForFont);
         editLineButton.getStyleClass().add(CLASS_BUTTON_HGAP_RIGHTMOST);
+        row1HBox1.getChildren().addAll(lineLabel, lineNameBox, space, stackPaneForLine);
+        
         row1HBox1.getStyleClass().add(CLASS_BUTTON_HGAP);
         
         row1HBox2 = new HBox();
@@ -394,6 +413,7 @@ public class m3Workspace extends AppWorkspaceComponent{
         removeStationsFromLineButton.setText("Remove\nStation");
         stationsListButton = gui.initChildButton(row1HBox2, LIST_ICON.toString(), LIST_TOOLTIP.toString(), false);       
         row1HBox2.getStyleClass().add(CLASS_BUTTON_HGAP);
+//        row1HBox2.getStyleClass().add(CLASS_EDIT_TOOLBAR_BUTTON_SIZE);
         
         lineThicknessSlider = new Slider(0, 10, 1);
         Tooltip lineThicknessSliderTooltip = new Tooltip(props.getProperty(THICKNESS_SLIDER_TOOLTIP.toString()));
@@ -409,8 +429,14 @@ public class m3Workspace extends AppWorkspaceComponent{
         stationNameBox = new ComboBox();
         stationColorPicker = new ColorPicker(Color.valueOf(WHITE_HEX)); 
         space = new Pane();
+        stackPaneForStation = new StackPane();
+        ellipseForStation = new Ellipse(20, 20);
+        ellipseForStation.setFill(stationColorPicker.getValue());
+        colorHexForStation = new Text(stationColorPicker.getValue().toString());
+        
+        stackPaneForStation.getChildren().addAll(stationColorPicker, ellipseForStation, colorHexForStation);
         row2HBox1.setHgrow(space, Priority.ALWAYS);
-        row2HBox1.getChildren().addAll(stationLabel, stationNameBox, space, stationColorPicker);
+        row2HBox1.getChildren().addAll(stationLabel, stationNameBox, space, stackPaneForStation);
         row2HBox1.getStyleClass().add(CLASS_BUTTON_HGAP);
         
         row2HBox2 = new HBox();
@@ -422,6 +448,7 @@ public class m3Workspace extends AppWorkspaceComponent{
         moveStationLabelButton.setText("Move\nLabel");
         rotateStationLabelButton = gui.initChildButton(row2HBox2, ROTATE_ICON.toString(), ROTATE_TOOLTIP.toString(), false);
         row2HBox2.getStyleClass().add(CLASS_BUTTON_HGAP);
+//        row2HBox2.getStyleClass().add(CLASS_EDIT_TOOLBAR_BUTTON_SIZE);
         
         stationRadiusSlider = new Slider(0, 10, 1);
         Tooltip stationRadiusSliderTooltip = new Tooltip(props.getProperty(RADIUS_SLIDER_TOOLTIP.toString()));
@@ -454,7 +481,7 @@ public class m3Workspace extends AppWorkspaceComponent{
         row4HBox1.setHgrow(space, Priority.ALWAYS);      
         bgColorPicker = new ColorPicker(Color.valueOf(WHITE_HEX));   
         row4HBox1.getChildren().addAll(decorLabel, space, bgColorPicker);
-        row4HBox1.getStyleClass().add(CLASS_BUTTON_HGAP);
+        row4HBox1.getStyleClass().add(CLASS_BUTTON_HGAP);    
 
         row4HBox2 = new HBox();
         imageBackgroundButton = gui.initChildButton(row4HBox2, "", IMAGE_BACKGROUND_TOOLTIP.toString(), false);
@@ -464,8 +491,9 @@ public class m3Workspace extends AppWorkspaceComponent{
         addLabelButton = gui.initChildButton(row4HBox2, "", ADD_LABEL_TOOLTIP.toString(), false);
         addLabelButton.setText("Add\nLabel");
         removeButton = gui.initChildButton(row4HBox2, "", REMOVE_ELEMENT_TOOLTOP.toString(), false);
-        addLabelButton.setText("Remove\nElement");
+        removeButton.setText("Remove\nElement");
         row4HBox2.getStyleClass().add(CLASS_BUTTON_HGAP);
+//        row4HBox2.getStyleClass().add(CLASS_EDIT_TOOLBAR_BUTTON_SIZE);
         
         decorToolbar.getChildren().addAll(row4HBox1, row4HBox2);
         
@@ -487,6 +515,7 @@ public class m3Workspace extends AppWorkspaceComponent{
         fontFamilyBox = new ComboBox();
         row5HBox2.getChildren().addAll(fontSizeBox, fontFamilyBox);
         row5HBox2.getStyleClass().add(CLASS_BUTTON_HGAP);
+        //row5HBox2.getStyleClass().add(CLASS_EDIT_TOOLBAR_BUTTON_SIZE);
         
         fontToolbar.getChildren().addAll(row5HBox1, row5HBox2);
 
@@ -507,7 +536,7 @@ public class m3Workspace extends AppWorkspaceComponent{
         mapSizeIncreaseButton = gui.initChildButton(row6HBox2, INC_ICON.toString(), INC_TOOLTIP.toString(), false);
         mapSizeDecreaseButton = gui.initChildButton(row6HBox2, DEC_ICON.toString(), DEC_TOOLTIP.toString(), false);
         row6HBox2.getStyleClass().add(CLASS_BUTTON_HGAP);
-        
+//        row6HBox2.getStyleClass().add(CLASS_EDIT_TOOLBAR_BUTTON_SIZE);
         navigationToolbar.getChildren().addAll(row6HBox1, row6HBox2);
   
 	// WE'LL RENDER OUR STUFF HERE IN THE CANVAS
@@ -519,7 +548,7 @@ public class m3Workspace extends AppWorkspaceComponent{
 	
 	// AND MAKE SURE THE DATA MANAGER IS IN SYNCH WITH THE PANE
 	m3Data data = (m3Data)app.getDataComponent();
-	data.setShapes(canvas.getChildren());
+	data.setM3Nodes(canvas.getChildren());
         
 	// AND NOW SETUP THE WORKSPACE
 	workspace = new BorderPane();
@@ -538,8 +567,7 @@ public class m3Workspace extends AppWorkspaceComponent{
     private void setGrid(boolean bool){
         
     }
-    
-    
+       
     private void setWorkspaceMoveable(){
         //https://stackoverflow.com/questions/38604780/javafx-zoom-scroll-in-scrollpane
     }
@@ -547,6 +575,22 @@ public class m3Workspace extends AppWorkspaceComponent{
     private void setWorkspaceZoomable(){
         
     }
+    
+    /**
+     * This function is used to detected the changes that user makes for the font of a label
+     * 
+     * @return newFont newFont is the changed font
+     */
+    public Font getCurrentFontSettings() {
+        String fontFamily = fontFamilyBox.getSelectionModel().getSelectedItem().toString();
+        int fontSize = Integer.valueOf(fontFamilyBox.getSelectionModel().getSelectedItem().toString());
+        FontWeight weight = FontWeight.NORMAL;
+        if (boldButton.isPressed()) weight = FontWeight.BOLD;
+        FontPosture posture = FontPosture.REGULAR;
+        if (italicButton.isPressed()) posture = FontPosture.ITALIC;
+        Font newFont = Font.font(fontFamily, weight, posture, fontSize);
+        return newFont;
+    }    
     
     // HELPER SETUP METHOD
     private void initControllers() {
@@ -557,6 +601,8 @@ public class m3Workspace extends AppWorkspaceComponent{
         Stage stage = gui.getWindow();
 	// MAKE THE EDIT CONTROLLER
 	MapEditController = new MapEditController(app);
+        // MAKE THE IMAGE AND LABEL CONTROLLER
+        ImageAndLabelController ImageAndTextController = new ImageAndLabelController(app);
         
         // CONNECT ThE SCENE WITH "WASD" BUTTON
         scene.setOnKeyPressed(new EventHandler<KeyEvent>() {
@@ -573,17 +619,15 @@ public class m3Workspace extends AppWorkspaceComponent{
         
         // PROMT TO SAVE FOR EXITTING APPLICATION
         stage.setOnCloseRequest(e->{
-            //PROMPT_TO_SAVE
+            //if unsave
+           app.getGUI().getFileController().handleExitRequest();
         });
         
-        // CONNECT THE GUI BUTTONS TO THEIR HANDLERS FOR TOPTOOLBAR       
-       /*
-        saveAsButton.setOnAction(e->{
-            MapEditController.processSaveAsRequest();
-        });
-        exportButton.setOnAction(e->{
-            MapEditController.processExportRequest();
-        });
+        // CONNECT THE GUI BUTTONS TO THEIR HANDLERS FOR TOPTOOLBAR   
+        Button undoButton = (Button)app.getGUI().getUndoToolbar().getChildren().get(0);
+        Button redoButton = (Button)app.getGUI().getUndoToolbar().getChildren().get(1);
+        Button aboutButton = (Button)app.getGUI().getAboutToolbar().getChildren().get(0);
+        
         undoButton.setOnAction(e->{
             MapEditController.processUndo();
         });
@@ -595,9 +639,9 @@ public class m3Workspace extends AppWorkspaceComponent{
         });            
         
 	// NOW CONNECT THE BUTTONS TO THEIR HANDLERS
-        */
+        
 	lineNameBox.setOnAction(e->{
-	    MapEditController.processSelectingLine((String)lineNameBox.getValue());
+	    MapEditController.processSelectingLine();
 	});
 	editLineButton.setOnAction(e->{
 	    MapEditController.processLineEditting();
@@ -610,9 +654,11 @@ public class m3Workspace extends AppWorkspaceComponent{
         removeLineButton.setOnAction(e->{
             MapEditController.processRemovingSelectedLine();
         });
+        
         addStationsToLineButton.setOnAction(e->{
             MapEditController.processAddStationOnSelectedLine();
         });	
+        
 	removeStationsFromLineButton.setOnAction(e->{
 	    MapEditController.processRemoveStationOnSelectedLine();
 	});
@@ -624,9 +670,11 @@ public class m3Workspace extends AppWorkspaceComponent{
 	lineThicknessSlider.valueProperty().addListener(e-> {
 	    MapEditController.processSelectLineThickness();
 	});
+        
 	stationNameBox.setOnAction(e->{ 
 	    MapEditController.processSelectingStation();
 	});
+        
 	stationColorPicker.setOnAction(e->{
 	    MapEditController.processFillingStationColor();
 	});
@@ -638,77 +686,94 @@ public class m3Workspace extends AppWorkspaceComponent{
 	removeStationButton.setOnAction(e->{
 	    MapEditController.processRemovingSelectedStation();
 	}); 
+        
 	snapButton.setOnAction(e->{
 	    MapEditController.processSnappingToGrid();
 	}); 
+        
 	moveStationLabelButton.setOnAction(e->{
 	    MapEditController.processMovingLabel();
 	}); 
+        
 	rotateStationLabelButton.setOnAction(e->{
 	    MapEditController.processRotatingLabel();
 	}); 
+        
         stationRadiusSlider.valueProperty().addListener(e-> {
 	    MapEditController.processSelectedStationRadius();
 	});
+        
 	stationSearchingBar1.setOnAction(e->{
 	    MapEditController.processSearchingSelection1();
 	}); 
+        
 	stationSearchingBar2.setOnAction(e->{
 	    MapEditController.processSearchingSelection2();
 	}); 
+        
 	routeFindingButton.setOnAction(e->{
 	    MapEditController.processFindingRoute();
 	}); 
-        
-       
+           
 	bgColorPicker.setOnAction(e->{
 	    MapEditController.processFillingBgColor();
 	}); 
         
-        
 	imageBackgroundButton.setOnAction(e->{
 	    MapEditController.processSettingImageBg();
 	}); 
+        
 	addImageButton.setOnAction(e->{
-	    MapEditController.processAddingImage();
-	}); 
-	addLabelButton.setOnAction(e->{
-	    MapEditController.processAddingLabel();
-	});      
+	    ImageAndTextController.processAddImage();                
+        });
+        
+        addLabelButton.setOnAction(e->{ 
+            ImageAndTextController.processAddLabel();
+        });  
+        
         removeButton.setOnAction(e->{
 	    MapEditController.processRemovingElement();
 	}); 
+        
 	fontColorPicker.setOnAction(e->{
-	    MapEditController.processFillingFontColor();
+	    ImageAndTextController.processChangeFont();
 	});         
+        
 	boldButton.setOnAction(e->{
-	    MapEditController.processBoldLabel();
+	    ImageAndTextController.processChangeFont();
 	});  
+        
 	italicButton.setOnAction(e->{
-	    MapEditController.processItalicLabel();
+	    ImageAndTextController.processChangeFont();
 	}); 
+        
 	fontSizeBox.setOnAction(e->{
-	    MapEditController.processLabelFontSize();
+	    ImageAndTextController.processChangeFont();
 	});  
+        
 	fontFamilyBox.setOnAction(e->{
-	    MapEditController.processLabelFontFamily();
+	    ImageAndTextController.processChangeFont();
 	}); 
+        
 	gridCheckBox.setOnAction(e->{
 	    MapEditController.processShowingGrid();
 	});  
+        
 	zoomInButton.setOnAction(e->{
 	    MapEditController.processZoomingIn();
 	}); 
+        
 	zoomOutButton.setOnAction(e->{
 	    MapEditController.processZoomingOut();
 	});  
+        
 	mapSizeIncreaseButton.setOnAction(e->{
 	    MapEditController.processIncreasingMapSize();
 	}); 
+        
 	mapSizeDecreaseButton.setOnAction(e->{
 	    MapEditController.processDecreasingMapSize();
 	});  
-        
         
 	// MAKE THE CANVAS CONTROLLER	
 	canvasController = new CanvasController(app);
@@ -733,8 +798,8 @@ public class m3Workspace extends AppWorkspaceComponent{
      * The loading info depends on the type of the shape,
      * @param shape shape is the selected shape
      */
-    public void loadSelectedShapeSettings(Shape shape) {
-	if (shape != null) {	    
+    public void loadSelectedNodeSettings(Node node) {
+	if (node != null) {	    
 	}
     }
 
@@ -748,6 +813,10 @@ public class m3Workspace extends AppWorkspaceComponent{
 	// NOTE THAT EACH CLASS SHOULD CORRESPOND TO
 	// A STYLE CLASS SPECIFIED IN THIS APPLICATION'S
 	// CSS FILE  
+        app.getGUI().getFileToolbar().setStyle("-fx-spacing: 10");
+        app.getGUI().getUndoToolbar().setStyle("-fx-spacing: 10");
+        app.getGUI().getAboutToolbar().setStyle("-fx-spacing: 10");
+        
         editToolbar.getChildren().add(metroLinesToolbar);
         editToolbar.getChildren().add(metroStationsToolbar);
 	editToolbar.getChildren().add(stationRouterToolbar);
@@ -796,7 +865,7 @@ public class m3Workspace extends AppWorkspaceComponent{
 	else if (dataManager.isInState(m3State.SELECTING_SHAPE) 
 		|| dataManager.isInState(m3State.DRAGGING_SHAPE)
 		|| dataManager.isInState(m3State.DRAGGING_NOTHING)) {
-	    boolean shapeIsNotSelected = dataManager.getSelectedShape() == null;
+	    boolean shapeIsNotSelected = dataManager.getSelectedNode() == null;
 	}
 	
 	//removeButton.setDisable(dataManager.getSelectedShape() == null);

@@ -136,7 +136,7 @@ public class DraggableImage extends Rectangle implements Draggable{
      * @return IMAGE the shapeType of DraggableImage
      */    
     @Override
-    public String getShapeType() {
+    public String getNodeType() {
         return IMAGE;
     }
     
@@ -155,6 +155,24 @@ public class DraggableImage extends Rectangle implements Draggable{
      */
     public DraggableImage clone(){
         return null;
+    }
+    
+    /**
+     * NOT SUPPORT
+     * @return 
+     */
+    @Override
+    public String getName() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    /**
+     * NOT SUPPORT 
+     * @param initName
+     */    
+    @Override
+    public void setName(String initName) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
     
 }

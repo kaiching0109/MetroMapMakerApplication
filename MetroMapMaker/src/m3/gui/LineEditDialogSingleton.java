@@ -5,6 +5,7 @@
  */
 package m3.gui;
 
+import djf.AppTemplate;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.ColorPicker;
@@ -12,9 +13,19 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.stage.Modality;
 import m3.data.DraggableLine;
+import m3.data.m3Data;
+
+/**
+ * This class is used to show a dialog for user, in order to get the information
+ * of the line. The information will include the selected line color, name and 
+ * two buttons - ok and cancel.
+ * 
+ * @author Kai
+ */
 
 public class LineEditDialogSingleton extends Stage{
     static LineEditDialogSingleton singleton;
@@ -28,6 +39,7 @@ public class LineEditDialogSingleton extends Stage{
     Button cancelButton;
     String lineName;
     TextField inputFeild;
+    AppTemplate app;
     
     final String lineDetailsLabelName = "Metro Line Details";
     final String lineDetailsTitleName = "Metro Map Maker - Metro Line Edit";
@@ -55,37 +67,38 @@ public class LineEditDialogSingleton extends Stage{
      * This method set the line that is selected
      * in the comboBox by user
      * 
-     * @param initLine uses to set lineName,
-     * Color
+     * @param initLine uses to set lineName
      */     
      public void setLine(DraggableLine initLine){
          line = initLine;
+         setLineName();
+         lineColorPicker.setValue(line.getColor()); 
      }
      
    /**
      * This method set the name of the line getting
      * from the selected line
      * 
-     * @param lineName will be shown in the TextField
      */      
-     public void setLineName(String lineName){
-         
+     private void setLineName(){
+         lineName = line.getName();
      }
      
      //TO SHOW THE CURRENT COLOR OF THE SELECteD LINE
-     private void setLineColorPicker(){
-         
+     private void setLineColorPicker(Color initColor){
+         lineColorPicker.setValue(initColor);
      }
      
      //FOR SETTING UP A TEXTFIELD TO INPUT 
      private void setInputField(){
-        inputFeild = new TextField();
-        inputFeild.setOnAction(e -> {
-            setLineName(inputFeild.getText());
-            //CHECK IF LINE EXISTS
-            //SETLINE IF EXISTS
-            //UPDATE LINE COLOR IF IT EXISTS
-            //SET IT TO DEFAULT COLOR IF IT'S NOT
+        inputFeild = new TextField(lineName); 
+        
+        inputFeild.setOnAction(e -> {      
+            m3Data data = (m3Data)app.getDataComponent();
+            if(data.searchNode(inputFeild.getText())){
+                DraggableLine foundLine = (DraggableLine)data.getSelectedNode();
+                setLine(foundLine);
+            }//endIf     
         });
      }
      
@@ -105,13 +118,16 @@ public class LineEditDialogSingleton extends Stage{
      * @param primaryStage The window above which this
      * dialog will be centered.
      */       
-    public void init(Stage primaryStage){
+    public void init(Stage primaryStage, AppTemplate initApp){
+        app = initApp;
+        setInputField(); 
         initModality(Modality.WINDOW_MODAL);
         initOwner(primaryStage);
         
         LineEditPane = new VBox();
         LineEditPane.setAlignment(Pos.CENTER);
-        LineEditPane.getChildren().add(lineDetailsLabel);
+        lineDetailsLabel = new Label(lineDetailsLabelName);
+        LineEditPane.getChildren().add(lineDetailsLabel);   
     }
     
     /**

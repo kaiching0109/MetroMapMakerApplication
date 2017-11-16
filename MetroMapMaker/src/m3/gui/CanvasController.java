@@ -11,6 +11,7 @@ import static m3.data.m3State.DRAGGING_SHAPE;
 import static m3.data.m3State.SELECTING_SHAPE;
 import static m3.data.m3State.SIZING_SHAPE;
 import djf.AppTemplate;
+import m3.data.DraggableLine;
 
 /**
  * This class responds to interactions with the rendering surface.
@@ -22,7 +23,12 @@ import djf.AppTemplate;
 public class CanvasController {
 
     AppTemplate app;
-
+    
+    /**
+     *  Constructor of our canvas 
+     * 
+     * @param initApp AppTemplate
+     */
     public CanvasController(AppTemplate initApp) {
         app = initApp;
     }
@@ -30,12 +36,15 @@ public class CanvasController {
     /**
      * Respond to mouse presses on the rendering surface, which we call canvas,
      * but is actually a Pane.
+     * 
+     * @param x x coordinate of the cursor.
+     * @param y y coordinate of the cursor.
      */
     public void processCanvasMousePress(int x, int y) {
         m3Data dataManager = (m3Data) app.getDataComponent();
         if (dataManager.isInState(SELECTING_SHAPE)) {
             // SELECT THE TOP SHAPE
-            Shape shape = dataManager.selectTopShape(x, y);
+            Shape shape = (Shape)dataManager.selectTopNode(x, y);
             Scene scene = app.getGUI().getPrimaryScene();
 
             // AND START DRAGGING IT
@@ -53,10 +62,22 @@ public class CanvasController {
             dataManager.startNewLine(x, y);
         } else if (dataManager.isInState(m3State.ADDING_STATION)) {
             dataManager.startNewStation(x, y);
-        } else if(dataManager.isInState(m3State.STARTING_IMAGE)){
-            dataManager.startNewImage(x, y);
-        } else if (dataManager.isInState(m3State.ADDING_LABEL)){
-            dataManager.startNewLabel(x, y);
+        } else if (dataManager.isInState(m3State.ADD_STATION_MODE)){
+            Scene scene = app.getGUI().getPrimaryScene();
+            scene.setCursor(Cursor.HAND);
+            DraggableLine selectedLine = (DraggableLine) dataManager.getSelectedNode();
+            //if click is on the line
+                //crete new station 
+            //if click elsewhere
+                //quit
+        } else if (dataManager.isInState(m3State.REMOVE_STATION_MODE)){
+            Scene scene = app.getGUI().getPrimaryScene();
+            scene.setCursor(Cursor.HAND);
+            DraggableLine selectedLine = (DraggableLine) dataManager.getSelectedNode();         
+            //if station is clicked
+                //remove station 
+            //if click elsewhere
+                //quit            
         }
         m3Workspace workspace = (m3Workspace) app.getWorkspaceComponent();
         workspace.reloadWorkspace(dataManager);
@@ -65,6 +86,9 @@ public class CanvasController {
     /**
      * Respond to mouse dragging on the rendering surface, which we call canvas,
      * but is actually a Pane.
+     * 
+     * @param x x coordinate of the cursor.
+     * @param y y coordinate of the cursor.
      */
     public void processCanvasMouseDragged(int x, int y) {
         m3Data dataManager = (m3Data) app.getDataComponent();
@@ -72,7 +96,7 @@ public class CanvasController {
             Draggable newDraggableShape = (Draggable) dataManager.getNewShape();
             newDraggableShape.size(x, y);
         } else if (dataManager.isInState(DRAGGING_SHAPE)) {
-            Draggable selectedDraggableShape = (Draggable) dataManager.getSelectedShape();
+            Draggable selectedDraggableShape = (Draggable) dataManager.getSelectedNode();
             selectedDraggableShape.drag(x, y);
             app.getGUI().updateToolbarControls(false);
         }
@@ -81,6 +105,9 @@ public class CanvasController {
     /**
      * Respond to mouse button release on the rendering surface, which we call canvas,
      * but is actually a Pane.
+     * 
+     * @param x x coordinate of the cursor.
+     * @param y y coordinate of the cursor.
      */
     public void processCanvasMouseRelease(int x, int y) {
         m3Data dataManager = (m3Data) app.getDataComponent();

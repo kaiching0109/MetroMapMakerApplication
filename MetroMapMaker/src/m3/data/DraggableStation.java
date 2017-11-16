@@ -199,7 +199,7 @@ public class DraggableStation extends Ellipse implements Draggable{
      * @return STATION the shapeType of DraggableLabel
      */           
     @Override
-    public String getShapeType() {
+    public String getNodeType() {
 	return STATION;
     }
 
@@ -210,5 +210,15 @@ public class DraggableStation extends Ellipse implements Draggable{
     @Override
     public Shape clone() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    /**
+     * The Accessor method to get the name of this station.
+     * 
+     * @return name the name of this station
+     */        
+    @Override
+    public String getName() {
+        return name;
     }
 }

@@ -10,6 +10,7 @@ import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
 import properties_manager.PropertiesManager;
 import djf.AppTemplate;
+import djf.components.AppWorkspaceComponent;
 import static djf.settings.AppPropertyType.LOAD_ERROR_MESSAGE;
 import static djf.settings.AppPropertyType.LOAD_ERROR_TITLE;
 import static djf.settings.AppPropertyType.LOAD_WORK_TITLE;
@@ -181,6 +182,28 @@ public class AppFileController {
 	    dialog.show(props.getProperty(LOAD_ERROR_TITLE), props.getProperty(LOAD_ERROR_MESSAGE));
         }
     }
+
+
+    /**
+     * This method will save the current course to a file that our user specifically
+     * want to save at. Note that we do not know the name of the file, so we need to 
+     * prompt the user.
+     * 
+     * @param courseToSave The course being edited that is to be saved to a file.
+     */    
+    public void handleSaveAsRequest(){
+        
+    }
+    
+    /**
+     * This method will export the current course to a file that our user specifically
+     * want to save at. Note that we do not know the name of the file, so we need to 
+     * prompt the user.
+     * 
+     * @param courseToSave The course being edited that is to be saved to a file.
+     */   
+    public void handleExportRequest() {
+    }   
     
     // HELPER METHOD FOR SAVING WORK
     private void saveWork(File selectedFile) throws IOException {

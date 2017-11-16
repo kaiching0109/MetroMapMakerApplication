@@ -14,31 +14,28 @@ import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 
 /**
-  ** This is a draggable label for our m3 application.
+ * This is a draggable label for our m3 application.
  * @author aaronsuen
  */
 public class DraggableLabel extends Text implements Draggable{
     double startX;
     double startY;
-    double fontSize;
-    FontWeight fontWeight;
-    FontPosture fontPosture;
-    String fontFamily;
     String text;
 
     /**
      * Contrustor for initialing DraggableLabel with default data.
+     * This should be called if the label doesn't belong
      */    
     public DraggableLabel(){
         setFunction();
         setOpacity(1.0);
         startX = 50;
         startY = 50;
-        fontSize = getFont().getSize();
-        fontWeight = FontWeight.NORMAL;
-        fontPosture = FontPosture.REGULAR;
-        fontFamily = getFont().getFamily();
     }
+    
+    /**
+     * Contrustor for initialing DraggableLabel with default data.
+     */
  
     /**
      * The method that helps creating an Label.
@@ -111,46 +108,6 @@ public class DraggableLabel extends Text implements Draggable{
         text = initText;
         this.setText(text);  
     }
-
-    /**
-     * Accessor method that is used to set the font family of this DraggableLabel.
-     * 
-     * @param initFontFamily font family to set
-     */               
-    public void setFontFamily(String initFontFamily){
-        fontFamily = initFontFamily;
-        setFont(Font.font(fontFamily, fontWeight, fontPosture, fontSize));
-    }
-
-    /**
-     * Accessor method that is used to set the font size of this DraggableLabel.
-     * 
-     * @param initSize size to set
-     */           
-    public void setFontSize(double initSize){
-        fontSize = initSize;
-        setFont(Font.font(fontFamily, fontWeight, fontPosture, fontSize));
-    }
-
-    /**
-     * Accessor method that is used to set the font posture of this DraggableLabel.
-     * 
-     * @param initFontPosture posture to set.
-     */       
-    public void setFontPosture(FontPosture initFontPosture){
-        fontPosture = initFontPosture;
-        setFont(Font.font(fontFamily, fontWeight, fontPosture, fontSize));
-    }
-
-    /**
-     * Accessor method that is used to set the font weight of this DraggableLabel.
-     * 
-     * @param initFontWeight weight to set.
-     */      
-    public void setFontWeight(FontWeight initFontWeight){
-        fontWeight = initFontWeight;
-        setFont(Font.font(getFont().getFamily(), fontWeight, fontPosture, fontSize));
-    }
  
     /**
      * Accessor method that is used to get the content of this DraggableLabel.
@@ -188,42 +145,6 @@ public class DraggableLabel extends Text implements Draggable{
     public double getHeight() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
- 
-    /**
-     * The Accessor method to get the font weight of this DraggableLabel.
-     *
-     * @return fontWeight the font weight of this DraggableLabel.
-     */      
-    public FontWeight getFontWeight(){
-        return fontWeight;
-    }
- 
-    /**
-     * The Accessor method to get the font posture of this DraggableLabel.
-     *
-     * @return fontPosture the font posture of this DraggableLabel.
-     */              
-    public FontPosture getFontPosture(){
-        return fontPosture;
-    }
-
-    /**
-     * The Accessor method to get the font family of this DraggableLabel.
-     *
-     * @return fontFamily the font family of this DraggableLabel.
-     */            
-    public String getFontFamily(){
-        return fontFamily;
-    }
-
-    /**
-     * The Accessor method to get the font size of this Draggable Label.
-     *
-     * @return fontSize the font size of this DraggableLabel.
-     */        
-    public double getFontSize(){
-        return fontSize;
-    }
     
     /**
      *  This method prompts user to input the content of the label
@@ -246,7 +167,7 @@ public class DraggableLabel extends Text implements Draggable{
      * @return LABEL the shapeType of DraggableLabel
      */        
     @Override
-    public String getShapeType() {
+    public String getNodeType() {
 	return LABEL;
     }
  
@@ -257,6 +178,24 @@ public class DraggableLabel extends Text implements Draggable{
     @Override
     public Shape clone() {
         return null;
+    }
+
+    /**
+     * NOT SUPPORT
+     * @return 
+     */
+    @Override
+    public String getName() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    /**
+     * NOT SUPPORT 
+     * @param initName
+     */        
+    @Override
+    public void setName(String initName) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
     
 }

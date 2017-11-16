@@ -8,8 +8,19 @@
     @author ?
     @version 1.0
 */
+
 .button{
     -fx-pref-height:40px;
+}
+
+.color-picker{
+    -fx-color-rect-width: 10px;
+    -fx-color-rect-height: 10px;
+    -fx-color-label-visible: true;
+    -fx-min-width: 10px;
+    -fx-min-height: 10px;
+    -fx-pref-width: 10px;
+    -fx-pref-height: 10px;
 }
 
 .sizeOfFindButton{

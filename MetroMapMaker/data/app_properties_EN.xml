@@ -8,8 +8,8 @@
 -->
 <properties>
     <property_list>
-        <property name="APP_TITLE"	    value="goLogoLo"></property>
-	<property name="APP_LOGO"	    value="goLogoLo.png"></property>
+        <property name="APP_TITLE"	    value="Metro Map Maker"></property>
+	<property name="APP_LOGO"	    value="goLogoLoLogo.png"></property>
         <property name="APP_ICON"           value="m3Icon.png"></property>
 	<property name="APP_PATH_CSS"	    value="/m3/css/"></property>
 	<property name="APP_CSS"	    value="m3_style.css"></property>
@@ -18,6 +18,8 @@
         <property name="PREF_WIDTH"         value="800"></property>
         <property name="PREF_HEIGHT"        value="600"></property>
         <property name="START_MAXIMIZED"    value="true"></property>
+        <property name="DEFAULT_NODE_X"    value="100"></property>
+        <property name="DEFAULT_NODE_Y"    value="100"></property>        
         
         <!-- PROGRAM ICON FILES -->
         <property name="NEW_ICON"	    value="New.png"></property>
@@ -37,10 +39,14 @@
         <property name="DEC_ICON"           value="decrease.png"></property> 
         
         <!-- TOOLTIPS FOR BUTTONS -->
-        <property name="NEW_TOOLTIP"		value="Create a New Logo"></property>
-        <property name="LOAD_TOOLTIP"		value="Load an Existing Logo"></property>
-        <property name="SAVE_TOOLTIP"		value="Save this Logo"></property>
-        <property name="EXIT_TOOLTIP"		value="Exit the Application"></property>
+        <property name="NEW_TOOLTIP"		value="Create a New Map"></property>
+        <property name="LOAD_TOOLTIP"		value="Load an Existing Map"></property>
+        <property name="SAVE_TOOLTIP"		value="Save this Map"></property>
+        <property name="SAVE_AS_TOOLTIP"        value="Save As another Map"></property>
+        <property name="EXPORT_TOOLTIP"        value="Export this Map"></property>
+        <property name="UNDO_TOOLTIP"           value="Undo Last Edit"></property>
+        <property name="REDO_TOOLTIP"           value="Redo Most Recent Undo"></property>  
+        <property name="ABOUT_TOOLTIP"          value="Open About Dialog"></property>      
         
         <!-- TOOLTIPS FOR EDITOR BUTTONS -->
         <property name="LINE_EDITOR_TOOLTIP"                value="Edit Line"></property>
@@ -99,7 +105,7 @@
 	<property name="SAVE_WORK_TITLE"		value="Save your work"></property>
 	<property name="LOAD_WORK_TITLE"		value="Select work file to load"></property>
 	<property name="WORK_FILE_EXT"			value="pm"></property>
-	<property name="WORK_FILE_EXT_DESC"		value="goLogoLo Files"></property>
+            <property name="WORK_FILE_EXT_DESC"		value="m3 Files"></property>
 
         <!-- PROGRAM ICON FILES -->
 	<property name="SELECTION_TOOL_ICON"	value="SelectionTool.png"></property>

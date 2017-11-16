@@ -46,14 +46,23 @@ public class AppGUI {
     // THIS IS THE TOP PANE WHERE WE CAN PUT TOOLBAR
     protected FlowPane topToolbarPane;
     
-    // THIS IS THE FILE TOOLBAR AND ITS CONTROLS
+    // THIS IS THE FILE TOOLBAR, UNDOTOOLBAR, ABOUTTOOLBAR AND THEIR CONTROLS
     protected FlowPane fileToolbar;
+    protected FlowPane undoToolbar;
+    protected FlowPane aboutToolbar;
 
     // FILE TOOLBAR BUTTONS
     protected Button newButton;
     protected Button loadButton;
     protected Button saveButton;
     protected Button exitButton;
+    protected Button saveAsButton;
+    protected Button exportButton;
+    
+    protected Button undoButton;
+    protected Button redoButton;
+    
+    protected Button aboutButton;
     
     // THIS DIALOG IS USED FOR GIVING FEEDBACK TO THE USER
     protected AppYesNoCancelDialogSingleton yesNoCancelDialog;
@@ -79,7 +88,9 @@ public class AppGUI {
 	appTitle = initAppTitle;
 	       
         // INIT THE TOOLBAR
-        initTopToolbar(app);
+        initFileToolbar(app);
+        initUndoToolbar(app);
+        initAboutToolbar(app);
         		
         // AND FINALLY START UP THE WINDOW (WITHOUT THE WORKSPACE)
         initWindow();
@@ -123,6 +134,26 @@ public class AppGUI {
     }
     
     /**
+     * Accessor method for getting the undo toolbar pane, within which all
+     * file controls are ultimately placed.
+     * 
+     * @return This application GUI's app pane.
+     */    
+    public FlowPane getUndoToolbar() {
+        return undoToolbar;
+    }
+
+    /**
+     * Accessor method for getting the file about pane, within which all
+     * file controls are ultimately placed.
+     * 
+     * @return This application GUI's app pane.
+     */    
+    public FlowPane getAboutToolbar() {
+        return aboutToolbar;
+    }    
+    
+    /**
      * Accessor method for getting this application's primary stage's,
      * scene.
      * 
@@ -153,7 +184,6 @@ public class AppGUI {
         // ONCE EDITING THAT FIRST COURSE BEGINS
 	newButton.setDisable(false);
         loadButton.setDisable(false);
-	exitButton.setDisable(false);
 
         // NOTE THAT THE NEW, LOAD, AND EXIT BUTTONS
         // ARE NEVER DISABLED SO WE NEVER HAVE TO TOUCH THEM
@@ -167,17 +197,23 @@ public class AppGUI {
      * This function initializes all the buttons in the toolbar at the top of
      * the application window. These are related to file management.
      */
-    private void initTopToolbar(AppTemplate app) {
+    private void initFileToolbar(AppTemplate app) {
         fileToolbar = new FlowPane();
 
         // HERE ARE OUR FILE TOOLBAR BUTTONS, NOTE THAT SOME WILL
         // START AS ENABLED (false), WHILE OTHERS DISABLED (true)
-        newButton = initChildButton(fileToolbar,	NEW_ICON.toString(),	    NEW_TOOLTIP.toString(),	false);
-        loadButton = initChildButton(fileToolbar,	LOAD_ICON.toString(),	    LOAD_TOOLTIP.toString(),	false);
-        saveButton = initChildButton(fileToolbar,	SAVE_ICON.toString(),	    SAVE_TOOLTIP.toString(),	true);
-        exitButton = initChildButton(fileToolbar,	EXIT_ICON.toString(),	    EXIT_TOOLTIP.toString(),	false);
-
-	// AND NOW SETUP THEIR EVENT HANDLERS
+        newButton = initChildButton(fileToolbar,	"",	    NEW_TOOLTIP.toString(),	false);
+        newButton.setText("New");
+        loadButton = initChildButton(fileToolbar,	"",	    LOAD_TOOLTIP.toString(),	false);
+        loadButton.setText("Load");
+        saveButton = initChildButton(fileToolbar,	"",	    SAVE_TOOLTIP.toString(),	true);
+        saveButton.setText("Save");
+        saveAsButton = initChildButton(fileToolbar,	"",	    SAVE_AS_TOOLTIP.toString(),	false);
+        saveAsButton.setText("Save As");
+        exportButton = initChildButton(fileToolbar,	"",	    EXPORT_TOOLTIP.toString(),	false);
+        exportButton.setText("Export");
+        
+        // AND NOW SETUP THEIR EVENT HANDLERS
         fileController = new AppFileController(app);
         newButton.setOnAction(e -> {
             fileController.handleNewRequest();
@@ -188,16 +224,35 @@ public class AppGUI {
         saveButton.setOnAction(e -> {
             fileController.handleSaveRequest();
         });
-        exitButton.setOnAction(e -> {
-            fileController.handleExitRequest();
+        saveAsButton.setOnAction(e -> {
+            fileController.handleSaveAsRequest();
         });	
+        exportButton.setOnAction(e -> {
+            fileController.handleExportRequest();
+        });	        
         
         // NOW PUT THE FILE TOOLBAR IN THE TOP TOOLBAR, WHICH COULD
         // ALSO STORE OTHER TOOLBARS
         topToolbarPane = new FlowPane();
         topToolbarPane.getChildren().add(fileToolbar);
     }
+    
+    private void initUndoToolbar(AppTemplate app){
+        undoToolbar  = new FlowPane();    
+        undoButton = initChildButton(undoToolbar,	"",	    UNDO_TOOLTIP.toString(),	false);
+        undoButton.setText("Undo");
+        redoButton = initChildButton(undoToolbar,	"",	    REDO_TOOLTIP.toString(),	false);
+        redoButton.setText("Redo");
+        topToolbarPane.getChildren().add(undoToolbar);
+    }
 
+    private void initAboutToolbar(AppTemplate app){
+        aboutToolbar = new FlowPane();
+        aboutButton = initChildButton(aboutToolbar,	"",	    ABOUT_TOOLTIP.toString(),	false);
+        aboutButton.setText("About");    
+        topToolbarPane.getChildren().add(aboutToolbar);
+    }
+    
     // INITIALIZE THE WINDOW (i.e. STAGE) PUTTING ALL THE CONTROLS
     // THERE EXCEPT THE WORKSPACE, WHICH WILL BE ADDED THE FIRST
     // TIME A NEW Page IS CREATED OR LOADED
@@ -344,9 +399,13 @@ public class AppGUI {
     private void initFileToolbarStyle() {
 	topToolbarPane.getStyleClass().add(CLASS_BORDERED_PANE);
         fileToolbar.getStyleClass().add(CLASS_BORDERED_PANE);
-	newButton.getStyleClass().add(CLASS_FILE_BUTTON);
-	loadButton.getStyleClass().add(CLASS_FILE_BUTTON);
-	saveButton.getStyleClass().add(CLASS_FILE_BUTTON);
-	exitButton.getStyleClass().add(CLASS_FILE_BUTTON);
+        fileToolbar.getStyleClass().add("-fx-spacing: 10");
+        undoToolbar.getStyleClass().add(CLASS_BORDERED_PANE);
+        undoToolbar.getStyleClass().add("-fx-spacing: 10");
+        aboutToolbar.getStyleClass().add(CLASS_BORDERED_PANE);
+        aboutToolbar.getStyleClass().add("-fx-spacing: 10");
+	//newButton.getStyleClass().add(CLASS_FILE_BUTTON);
+	//loadButton.getStyleClass().add(CLASS_FILE_BUTTON);
+	//saveButton.getStyleClass().add(CLASS_FILE_BUTTON);
     }
 }
