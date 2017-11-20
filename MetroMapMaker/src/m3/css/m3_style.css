@@ -9,6 +9,14 @@
     @version 1.0
 */
 
+.roundButton{
+    "-fx-background-radius: 5em; " +
+    "-fx-min-width: 3px; " +
+    "-fx-min-height: 3px; " +
+    "-fx-max-width: 3px; " +
+    "-fx-max-height: 3px;"  
+}
+
 .button{
     -fx-pref-height:40px;
 }

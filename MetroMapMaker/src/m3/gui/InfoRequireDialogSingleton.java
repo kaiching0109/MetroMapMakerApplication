@@ -16,6 +16,7 @@ import javafx.scene.paint.Color;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import static m3.data.Draggable.LINE;
+import static m3.data.m3Data.BLACK_HEX;
 import static m3.data.m3Data.WHITE_HEX;
 
 /**
@@ -30,8 +31,7 @@ public class InfoRequireDialogSingleton extends Stage{
     
     static InfoRequireDialogSingleton singleton;
     
-    VBox InfoReuirePane;
-    String type;    
+    VBox InfoReuirePane; 
     Button okButton;
     Button cancelButton;
     HBox inputBox;
@@ -40,7 +40,7 @@ public class InfoRequireDialogSingleton extends Stage{
     Label messageLabel;
     TextField nameTextField;
     String name;
-    ColorPicker lineColorPicker;
+    ColorPicker colorPicker;
     Scene infoRequireScene;
     
     /**
@@ -67,10 +67,11 @@ public class InfoRequireDialogSingleton extends Stage{
      * 
      * @param initType Either LINE or STATION, depending on which
      * button the user selected when this dialog was presented.
-     */    
+         
     public void setType(String initType){
         type = initType;
     }
+    */
 
     /**
      * This method initializes the singleton for use.
@@ -90,14 +91,12 @@ public class InfoRequireDialogSingleton extends Stage{
         inputBox.getChildren().addAll(nameLabel, nameTextField);
         InfoReuirePane.getChildren().add(inputBox);
         
-        if(type.equals(LINE)){          
-            lineColorPicker = new ColorPicker();
-            lineColorPicker.setValue(Color.valueOf(WHITE_HEX));
-            lineColorPicker.setOnAction(e->{
-               //SET THE COLOR BACK TO DATA CLASS
-            });
-            InfoReuirePane.getChildren().add(lineColorPicker);       
-        } //endIf 
+        colorPicker = new ColorPicker();
+        colorPicker.setValue(Color.valueOf(BLACK_HEX));
+        colorPicker.setOnAction(e->{
+           //SET THE COLOR BACK TO DATA CLASS
+        });
+        InfoReuirePane.getChildren().add(colorPicker);  
         
         //SET OKBUTTON
         okButton = new Button("OK");    
@@ -129,8 +128,8 @@ public class InfoRequireDialogSingleton extends Stage{
      * @return Color, depending on which color the user selected 
      * in the ColorPicker when this dialog was presented.
      */    
-    public ColorPicker getLineColorPicker(){
-        return lineColorPicker;  
+    public ColorPicker getColorPicker(){
+        return colorPicker;  
     }
     
     /**
@@ -154,7 +153,7 @@ public class InfoRequireDialogSingleton extends Stage{
     public void show(String title, String message) {
 	// SET THE DIALOG TITLE BAR TITLE
 	setTitle(title);
-	
+	nameTextField.clear();
 	// SET THE MESSAGE TO DISPLAY TO THE USER
         messageLabel.setText(message);
 	

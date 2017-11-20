@@ -7,6 +7,7 @@ package m3.data;
 
 import java.util.Optional;
 import javafx.scene.control.TextInputDialog;
+import javafx.scene.paint.Color;
 import javafx.scene.shape.Shape;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontPosture;
@@ -29,8 +30,7 @@ public class DraggableLabel extends Text implements Draggable{
     public DraggableLabel(){
         setFunction();
         setOpacity(1.0);
-        startX = 50;
-        startY = 50;
+        setFill(Color.BLACK);
     }
     
     /**

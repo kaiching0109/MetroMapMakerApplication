@@ -6,14 +6,21 @@
 package m3.data;
 
 import java.util.ArrayList;
+import java.util.ListIterator;
+import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.ReadOnlyObjectWrapper;
+import javafx.beans.property.SimpleDoubleProperty;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
+import javafx.collections.ObservableList;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Line;
+import javafx.scene.shape.Polyline;
 import javafx.scene.shape.Shape;
 /**
  * This is a draggable line for our m3 application.
  * @author aaronsuen
  */
-public class DraggableLine extends Line implements Draggable{
+public class DraggableLine extends Polyline implements Draggable{
     
     double startX;
     double startY;
@@ -29,14 +36,12 @@ public class DraggableLine extends Line implements Draggable{
      * Contrustor for initialing DraggableLine with default data.
      */    
     public DraggableLine(){
-        setStartX(0.0);
-        setStartY(0.0);
-        setEndX(0.0);
-        setEndY(0.0);
         startX = 0.0;
         startY= 0.0;
         endX = 0.0;
         endY = 0.0;
+        lineLabel1 = new DraggableLabel();
+        lineLabel2 = new DraggableLabel();
     }
 
     /**
@@ -59,8 +64,9 @@ public class DraggableLine extends Line implements Draggable{
     public void start(int x, int y) {
         startX = x;
         startY = y;
-        setStartX(x);
-        setStartY(y);       
+        this.getPoints().setAll(new Double[]{startX, startY});
+        lineLabel1.setX(startX);
+        lineLabel1.setY(startX);  
     }
 
     /**
@@ -70,9 +76,87 @@ public class DraggableLine extends Line implements Draggable{
      * @param y  y is the y coordinate of the clicked position of the cursor.
      */           
     @Override
-    public void drag(int x, int y) {
-        setEndX(x);
-        setEndY(y);
+    public void drag(int x, int y) { 
+        final ObservableList<Double> points = getPoints(); 
+        for(int i = 0; i < points.size(); i+=2){
+            final int idx = i;
+            double deltaX = points.get(i) - lineLabel1.getX();
+            double deltaY = points.get(i + 1) - lineLabel1.getY();
+            points.set(idx, points.get(i) + deltaX);
+            points.set(idx + 1, points.get(i) + deltaY);
+        }
+    }
+    
+    public void setBinding(){
+        final ObservableList<Double> points = getPoints(); 
+        
+        if(!points.isEmpty()){
+            for (int i = 2; i < points.size() - 2; i+=2) {
+                 final int idx = i;
+
+                DoubleProperty xProperty = new SimpleDoubleProperty(points.get(i));
+                DoubleProperty yProperty = new SimpleDoubleProperty(points.get(i + 1));        
+
+                xProperty.addListener(new ChangeListener<Number>() {
+                       @Override public void changed(ObservableValue<? extends Number> ov, Number oldX, Number x) {
+                         points.set(idx, (double) x);
+                       }     
+                });
+                yProperty.addListener(new ChangeListener<Number>() {
+                  @Override public void changed(ObservableValue<? extends Number> ov, Number oldY, Number y) {
+                    points.set(idx + 1, (double) y);
+                  }
+                });            
+            }
+        }
+    }    
+    
+    public void setBindingHeadEnd(){
+        final ObservableList<Double> points = getPoints(); 
+        int size = points.size();
+        DoubleProperty startXProperty = new SimpleDoubleProperty(points.get(0));
+        DoubleProperty startYProperty = new SimpleDoubleProperty(points.get(1));
+        DoubleProperty endXProperty = new SimpleDoubleProperty(points.get(size - 2));
+        DoubleProperty endYProperty = new SimpleDoubleProperty(points.get(size - 1));
+        startXProperty.bind(lineLabel1.xProperty());
+        startYProperty.bind(lineLabel1.yProperty());
+        endXProperty.bind(lineLabel2.xProperty());
+        endYProperty.bind(lineLabel2.yProperty());        
+        
+            startXProperty.addListener(new ChangeListener<Number>() {
+                   @Override public void changed(ObservableValue<? extends Number> ov, Number oldX, Number x) {
+                     points.set(0, (double) x);
+                   }     
+            });
+            startYProperty.addListener(new ChangeListener<Number>() {
+              @Override public void changed(ObservableValue<? extends Number> ov, Number oldY, Number y) {
+                points.set(1, (double) y);
+              }
+            });    
+            endXProperty.addListener(new ChangeListener<Number>() {
+                   @Override public void changed(ObservableValue<? extends Number> ov, Number oldX, Number x) {
+                     points.set(size - 2, (double) x);
+                   }     
+            });
+            endYProperty.addListener(new ChangeListener<Number>() {
+              @Override public void changed(ObservableValue<? extends Number> ov, Number oldY, Number y) {
+                points.set(size - 1, (double) y);
+              }
+            });              
+    }
+    
+    /**
+     * The method that helps creating a turning point of this Line.
+     * 
+     * @param x  x is the x coordinate of the clicked position of the cursor.
+     * @param y  y is the y coordinate of the clicked position of the cursor.
+     */            
+    public void turn(int x, int y){
+        endX = x;
+        endY = y;
+        this.getPoints().addAll(new Double[]{endX, endY}); 
+        lineLabel2.setX(endX);
+        lineLabel2.setY(endY); 
     }
 
     /**
@@ -83,7 +167,18 @@ public class DraggableLine extends Line implements Draggable{
      */         
     @Override
     public void size(int x, int y) {
-        setStrokeWidth(y);
+        endX = x;
+        endY = y;
+        int size = this.getPoints().size();
+        
+        if(size >= 4){
+            this.getPoints().set(size - 2, endX);
+            this.getPoints().set(size - 1, endY);
+        } else {
+            this.getPoints().setAll(startX, startY, endX, endY);
+        }
+        lineLabel2.setX(endX);
+        lineLabel2.setY(endY);
     }
 
     /**
@@ -143,37 +238,46 @@ public class DraggableLine extends Line implements Draggable{
      * 
      * @param initName the list of stations to set.
      */    
+    @Override
     public void setName(String initName){
         name = initName;
+        setLineLabel1();
+        setLineLabel2();
     }
 
     /**
      * This method is used to set the label of the line.
-     */        
-    public void setLineLabel1(){
-        lineLabel1 = new DraggableLabel();
+     */    
+    private void setLineLabel1(){
         lineLabel1.setContent(name);
         lineLabel1.setX(startX);
         lineLabel1.setY(startY);
         lineLabel1.setOnMousePressed(e->{
-            setStartX(lineLabel1.getX());
-            setStartY(lineLabel1.getY());
+           // this.getPoints().get(this.get);
         });
     }
     
     /**
      * This method is used to set the label of the line.
-     */         
-    public void setLineLabel2(){
-        lineLabel2 = new DraggableLabel();
+     */   
+    
+    private void setLineLabel2(){
         lineLabel2.setContent(name);
         lineLabel2.setX(endX);
         lineLabel2.setY(endY);     
         lineLabel2.setOnMousePressed(e->{
-            setEndX(lineLabel2.getX());
-            setEndY(lineLabel2.getY());
+            
         });        
     }
+    
+    public DraggableLabel getLineLabel1(){
+        return lineLabel1;
+    }
+    
+    public DraggableLabel getLineLabel2(){
+        return lineLabel2;
+    }
+    
  
     /**
      * This method is used to set the color of the line.
@@ -280,6 +384,27 @@ public class DraggableLine extends Line implements Draggable{
         if(endX - startX != 0)
             slope =  (int)((endY - startY) / (endX - startX));
         return (slope * (x - startX) == y - startY);   
+    }
+    
+    public final SimpleDoubleProperty getStartXProperty(){
+        return new SimpleDoubleProperty(startX);
+    }
+    
+    public final SimpleDoubleProperty getStartYProperty(){
+        return new SimpleDoubleProperty(startY);
+    }
+
+    public final SimpleDoubleProperty getEndXProperty(){
+        return new SimpleDoubleProperty(endX);
+    }
+
+    public SimpleDoubleProperty getEndYProperty(){
+        return new SimpleDoubleProperty(endY);
+    }    
+    
+    @Override
+    public String toString(){
+        return name;
     }
     
 }

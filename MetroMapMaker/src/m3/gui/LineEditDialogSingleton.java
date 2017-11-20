@@ -95,7 +95,7 @@ public class LineEditDialogSingleton extends Stage{
         
         inputFeild.setOnAction(e -> {      
             m3Data data = (m3Data)app.getDataComponent();
-            if(data.searchNode(inputFeild.getText())){
+            if(data.searchLine(inputFeild.getText())){
                 DraggableLine foundLine = (DraggableLine)data.getSelectedNode();
                 setLine(foundLine);
             }//endIf     

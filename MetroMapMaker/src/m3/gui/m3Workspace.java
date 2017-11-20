@@ -52,6 +52,7 @@ import static djf.settings.AppPropertyType.ZOOMOUT_TOOLTIP;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
@@ -66,6 +67,7 @@ import javafx.scene.control.Slider;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.control.Tooltip;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.input.MouseButton;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
@@ -81,6 +83,7 @@ import javafx.scene.text.FontPosture;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
+import javafx.util.StringConverter;
 import static m3.css.m3Style.CLASS_BUTTON;
 import static m3.css.m3Style.CLASS_BUTTON_HGAP;
 import static m3.css.m3Style.CLASS_BUTTON_HGAP_RIGHTMOST;
@@ -90,6 +93,7 @@ import static m3.css.m3Style.CLASS_EDIT_TOOLBAR;
 import static m3.css.m3Style.CLASS_EDIT_TOOLBAR_ROW;
 import static m3.css.m3Style.CLASS_FIND_BUTTON_SIZE;
 import static m3.css.m3Style.CLASS_RENDER_CANVAS;
+import m3.data.DraggableLine;
 import m3.data.m3Data;
 import static m3.data.m3Data.WHITE_HEX;
 import m3.data.m3State;
@@ -391,7 +395,7 @@ public class m3Workspace extends AppWorkspaceComponent{
 
         row1HBox1 = new HBox();
         lineLabel = new Label("Metro Lines");
-        lineNameBox = new ComboBox(); 
+        lineNameBox = new ComboBox();        
         space = new Pane();
         row1HBox1.setHgrow(space, Priority.ALWAYS);
         stackPaneForLine = new StackPane();
@@ -406,7 +410,7 @@ public class m3Workspace extends AppWorkspaceComponent{
         
         row1HBox2 = new HBox();
         addLineButton = gui.initChildButton(row1HBox2, ADD_ICON.toString(), ADD_LINE_TOOLTIP.toString(), false);
-        removeLineButton = gui.initChildButton(row1HBox2, REMOVE_ICON.toString(), REMOVE_LINE_TOOLTIP.toString(), true);
+        removeLineButton = gui.initChildButton(row1HBox2, REMOVE_ICON.toString(), REMOVE_LINE_TOOLTIP.toString(), false);
         addStationsToLineButton = gui.initChildButton(row1HBox2, "", ADD_STATION_ON_LINE_TOOLTIP.toString(), true);
         addStationsToLineButton.setText("Add\nStation");
         removeStationsFromLineButton = gui.initChildButton(row1HBox2, "", REMOVE_STATION_FROM_LINE_TOOLTIP.toString(), true);
@@ -554,9 +558,10 @@ public class m3Workspace extends AppWorkspaceComponent{
 	workspace = new BorderPane();
         editToolScrollbar = new ScrollPane();
 	((BorderPane)workspace).setLeft(editToolScrollbar);
-        canvasScrollPane = new ScrollPane();
-        canvasScrollPane.setContent(canvas);
-	((BorderPane)workspace).setCenter(canvasScrollPane);           
+       // canvasScrollPane = new ScrollPane();
+        //canvasScrollPane.setContent(canvas);
+        data.setM3Nodes(canvas.getChildren());
+	((BorderPane)workspace).setCenter(canvas);           
     }
     
     // USED TO CREATE THE GRID
@@ -639,16 +644,18 @@ public class m3Workspace extends AppWorkspaceComponent{
         });            
         
 	// NOW CONNECT THE BUTTONS TO THEIR HANDLERS
-        
+      
 	lineNameBox.setOnAction(e->{
 	    MapEditController.processSelectingLine();
 	});
+        
 	editLineButton.setOnAction(e->{
 	    MapEditController.processLineEditting();
 	});
         
 	addLineButton.setOnAction(e->{
 	    MapEditController.processSelectLineToDraw();
+            
 	});
         
         removeLineButton.setOnAction(e->{
@@ -777,8 +784,12 @@ public class m3Workspace extends AppWorkspaceComponent{
         
 	// MAKE THE CANVAS CONTROLLER	
 	canvasController = new CanvasController(app);
-	canvas.setOnMousePressed(e->{
-	    canvasController.processCanvasMousePress((int)e.getX(), (int)e.getY());
+	canvas.setOnMousePressed(e->{   
+            if(e.isSecondaryButtonDown()){
+                canvasController.processCanvasMouseRightClick();
+            }
+            else
+                canvasController.processCanvasMousePress((int)e.getX(), (int)e.getY());
 	});
 	canvas.setOnMouseReleased(e->{
 	    canvasController.processCanvasMouseRelease((int)e.getX(), (int)e.getY());

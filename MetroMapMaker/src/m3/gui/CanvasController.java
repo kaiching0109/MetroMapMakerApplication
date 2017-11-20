@@ -12,6 +12,7 @@ import static m3.data.m3State.SELECTING_SHAPE;
 import static m3.data.m3State.SIZING_SHAPE;
 import djf.AppTemplate;
 import m3.data.DraggableLine;
+import m3.data.DraggableStation;
 
 /**
  * This class responds to interactions with the rendering surface.
@@ -41,6 +42,7 @@ public class CanvasController {
      * @param y y coordinate of the cursor.
      */
     public void processCanvasMousePress(int x, int y) {
+        
         m3Data dataManager = (m3Data) app.getDataComponent();
         if (dataManager.isInState(SELECTING_SHAPE)) {
             // SELECT THE TOP SHAPE
@@ -58,10 +60,14 @@ public class CanvasController {
                 app.getWorkspaceComponent().reloadWorkspace(dataManager);
             }
         } else if (dataManager.isInState(m3State.STARTING_LINE)) {
-            //ASK INFO
             dataManager.startNewLine(x, y);
         } else if (dataManager.isInState(m3State.ADDING_STATION)) {
             dataManager.startNewStation(x, y);
+        } else if (dataManager.isInState(m3State.SIZING_SHAPE)){
+            if(dataManager.getNewShape() instanceof DraggableLine){
+                DraggableLine newLine = (DraggableLine) dataManager.getNewShape();
+                newLine.turn(x, y);                
+            }    
         } else if (dataManager.isInState(m3State.ADD_STATION_MODE)){
             Scene scene = app.getGUI().getPrimaryScene();
             scene.setCursor(Cursor.HAND);
@@ -78,6 +84,10 @@ public class CanvasController {
                 //remove station 
             //if click elsewhere
                 //quit            
+       /* } else if (dataManager.isInState(m3State.SIZING_LINE)){
+            DraggableLine newLine = (DraggableLine) dataManager.getNewShape();
+            newLine.turn(x, y);
+        */       
         }
         m3Workspace workspace = (m3Workspace) app.getWorkspaceComponent();
         workspace.reloadWorkspace(dataManager);
@@ -93,8 +103,10 @@ public class CanvasController {
     public void processCanvasMouseDragged(int x, int y) {
         m3Data dataManager = (m3Data) app.getDataComponent();
         if (dataManager.isInState(SIZING_SHAPE)) {
-            Draggable newDraggableShape = (Draggable) dataManager.getNewShape();
-            newDraggableShape.size(x, y);
+            if(!(dataManager.getNewShape() instanceof DraggableStation)){
+                Draggable newDraggableShape = (Draggable) dataManager.getNewShape();
+                newDraggableShape.size(x, y);
+            }    
         } else if (dataManager.isInState(DRAGGING_SHAPE)) {
             Draggable selectedDraggableShape = (Draggable) dataManager.getSelectedNode();
             selectedDraggableShape.drag(x, y);
@@ -111,8 +123,8 @@ public class CanvasController {
      */
     public void processCanvasMouseRelease(int x, int y) {
         m3Data dataManager = (m3Data) app.getDataComponent();
-        if (dataManager.isInState(SIZING_SHAPE)) {
-            dataManager.selectSizedShape();
+        if (dataManager.isInState(SIZING_SHAPE)) { 
+            
             app.getGUI().updateToolbarControls(false);
         } else if (dataManager.isInState(m3State.DRAGGING_SHAPE)) {
             dataManager.setState(SELECTING_SHAPE);
@@ -122,5 +134,18 @@ public class CanvasController {
         } else if (dataManager.isInState(m3State.DRAGGING_NOTHING)) {
             dataManager.setState(SELECTING_SHAPE);
         }
+    }
+    
+    public void processCanvasMouseRightClick(){
+        Scene scene = app.getGUI().getPrimaryScene();
+        m3Data dataManager = (m3Data) app.getDataComponent();
+        dataManager.setState(SELECTING_SHAPE);
+        if(dataManager.getNewShape() instanceof DraggableLine){
+            DraggableLine line = (DraggableLine)dataManager.getNewShape();
+            line.setBindingHeadEnd();
+        }
+        dataManager.selectSizedShape();
+        scene.setCursor(Cursor.DEFAULT);
+        
     }
 }

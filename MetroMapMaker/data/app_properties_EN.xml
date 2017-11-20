@@ -86,7 +86,11 @@
         <property name="SAVE_ERROR_TITLE"		value="Save Work Error"></property>
         <property name="PROPERTIES_LOAD_ERROR_MESSAGE"	value="An error occured loading a properties file."></property>	
         <property name="PROPERTIES_LOAD_ERROR_TITLE"	value="Properties File Loading Error"></property>
-	
+        <property name="LINE_EXISTED_ERROR_MESSAGE"     value="The line is already existed."></property>
+	<property name="LINE_EXISTED_ERROR_TITLE"       value="Existed Line"></property>
+        <property name="STATION_EXISTED_ERROR_MESSAGE"  value="The station is already existed."></property>
+        <property name="STATION_EXISTED_ERROR_TITLE"    value="Existed Station"></property>
+        
         <!-- VERIFICATION MESSAGES -->
 	
         <property name="NEW_COMPLETED_MESSAGE"		value="New Work Ready for Editing"></property>

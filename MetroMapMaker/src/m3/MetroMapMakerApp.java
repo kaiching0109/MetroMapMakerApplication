@@ -14,9 +14,11 @@ import java.io.IOException;
 import java.util.Locale;
 import static javafx.application.Application.launch;
 import javafx.stage.Stage;
+import static m3.data.Draggable.LINE;
 import m3.data.m3Data;
 import m3.file.m3Files;
 import m3.gui.AppWelcomeDialogSingleton;
+import m3.gui.InfoRequireDialogSingleton;
 import m3.gui.LineEditDialogSingleton;
 import m3.gui.m3Workspace;
 import properties_manager.PropertiesManager;
@@ -46,7 +48,9 @@ public class MetroMapMakerApp extends AppTemplate{
         appWelcomeDialog.init(gui.getWindow(), this);       
         workspaceComponent = new m3Workspace(this);
         LineEditDialogSingleton lineEditDialog = LineEditDialogSingleton.getSingleton();
-        lineEditDialog.init(gui.getWindow(), this);        
+        lineEditDialog.init(gui.getWindow(), this);    
+        InfoRequireDialogSingleton infoDialog = InfoRequireDialogSingleton.getSingleton();    
+        infoDialog.init(gui.getWindow());
         appWelcomeDialog.show("Welcome to the Metro Map Maker", "");
         try {
             String selection = appWelcomeDialog.getSelection();

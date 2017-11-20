@@ -1,38 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project-private xmlns="http://www.netbeans.org/ns/project-private/1">
-    <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
+    <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="1">
+        <file>
+            <url>src/m3/gui/m3Workspace.java</url>
+            <bookmark id="1">
+                <name/>
+                <line>788</line>
+                <key/>
+            </bookmark>
+        </file>
+    </editor-bookmarks>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
             <file>file:/Users/aaronsuen/NetBeansProjects/Metro_Map_Maker/MetroMapMaker/src/m3/MetroMapMakerApp.java</file>
             <file>file:/Users/aaronsuen/NetBeansProjects/Metro_Map_Maker/MetroMapMaker/src/m3/gui/InfoRequireDialogSingleton.java</file>
-            <file>file:/Users/aaronsuen/NetBeansProjects/Metro_Map_Maker/MetroMapMaker/src/m3/gui/LineEditDialogSingleton.java</file>
-            <file>file:/Users/aaronsuen/NetBeansProjects/Metro_Map_Maker/MetroMapMaker/src/m3/data/Draggable.java</file>
-            <file>file:/Users/aaronsuen/NetBeansProjects/Metro_Map_Maker/MetroMapMaker/src/m3/transactions/ChangeBackground_Transaction.java</file>
             <file>file:/Users/aaronsuen/NetBeansProjects/Metro_Map_Maker/MetroMapMaker/src/m3/data/DraggableStation.java</file>
-            <file>file:/Users/aaronsuen/NetBeansProjects/Metro_Map_Maker/MetroMapMaker/src/m3/gui/CanvasController.java</file>
-            <file>file:/Users/aaronsuen/NetBeansProjects/Metro_Map_Maker/MetroMapMaker/src/m3/gui/MapEditController.java</file>
-            <file>file:/Users/aaronsuen/NetBeansProjects/Metro_Map_Maker/MetroMapMaker/src/m3/data/m3State.java</file>
-            <file>file:/Users/aaronsuen/NetBeansProjects/Metro_Map_Maker/MetroMapMaker/src/m3/gui/LineStationListingDialogSingleton.java</file>
-            <file>file:/Users/aaronsuen/NetBeansProjects/Metro_Map_Maker/MetroMapMaker/src/m3/gui/ImageAndLabelController.java</file>
-            <file>file:/Users/aaronsuen/NetBeansProjects/Metro_Map_Maker/MetroMapMaker/src/m3/css/m3_style.css</file>
-            <file>file:/Users/aaronsuen/NetBeansProjects/Metro_Map_Maker/MetroMapMaker/src/m3/gui/RouteDialogSingleton.java</file>
-            <file>file:/Users/aaronsuen/NetBeansProjects/Metro_Map_Maker/MetroMapMaker/src/m3/transactions/ChangeShapeColor_Transaction.java</file>
-            <file>file:/Users/aaronsuen/NetBeansProjects/Metro_Map_Maker/MetroMapMaker/src/m3/transactions/ChangeShapeName_Transaction.java</file>
-            <file>file:/Users/aaronsuen/NetBeansProjects/Metro_Map_Maker/MetroMapMaker/src/m3/gui/m3Workspace.java</file>
-            <file>file:/Users/aaronsuen/NetBeansProjects/Metro_Map_Maker/MetroMapMaker/src/m3/data/DraggableImage.java</file>
-            <file>file:/Users/aaronsuen/NetBeansProjects/Metro_Map_Maker/MetroMapMaker/src/m3/file/m3Files.java</file>
-            <file>file:/Users/aaronsuen/NetBeansProjects/Metro_Map_Maker/MetroMapMaker/src/m3/data/m3Data.java</file>
-            <file>file:/Users/aaronsuen/NetBeansProjects/Metro_Map_Maker/MetroMapMaker/src/m3/transactions/AddNode_Transaction.java</file>
-            <file>file:/Users/aaronsuen/NetBeansProjects/Metro_Map_Maker/MetroMapMaker/src/m3/data/DraggableLine.java</file>
-            <file>file:/Users/aaronsuen/NetBeansProjects/Metro_Map_Maker/MetroMapMaker/src/m3/transactions/MoveNode_Transaction.java</file>
-            <file>file:/Users/aaronsuen/NetBeansProjects/Metro_Map_Maker/MetroMapMaker/src/m3/transactions/ChangeTextFont_Transaction.java</file>
-            <file>file:/Users/aaronsuen/NetBeansProjects/Metro_Map_Maker/MetroMapMaker/src/m3/gui/AppWelcomeDialogSingleton.java</file>
-            <file>file:/Users/aaronsuen/NetBeansProjects/Metro_Map_Maker/MetroMapMaker/src/m3/transactions/ChangeStationRadius_Transaction.java</file>
-            <file>file:/Users/aaronsuen/NetBeansProjects/Metro_Map_Maker/MetroMapMaker/data/app_properties_EN.xml</file>
-            <file>file:/Users/aaronsuen/NetBeansProjects/Metro_Map_Maker/MetroMapMaker/src/m3/transactions/RemoveNode_Transaction.java</file>
             <file>file:/Users/aaronsuen/NetBeansProjects/Metro_Map_Maker/MetroMapMaker/src/m3/data/DraggableLabel.java</file>
-            <file>file:/Users/aaronsuen/NetBeansProjects/Metro_Map_Maker/MetroMapMaker/src/m3/data/Map.java</file>
-            <file>file:/Users/aaronsuen/NetBeansProjects/Metro_Map_Maker/MetroMapMaker/src/m3/transactions/ChangeLineThickness_Transaction.java</file>
+            <file>file:/Users/aaronsuen/NetBeansProjects/Metro_Map_Maker/MetroMapMaker/src/m3/gui/m3Workspace.java</file>
+            <file>file:/Users/aaronsuen/NetBeansProjects/Metro_Map_Maker/MetroMapMaker/src/m3/gui/CanvasController.java</file>
+            <file>file:/Users/aaronsuen/NetBeansProjects/Metro_Map_Maker/MetroMapMaker/src/m3/data/DraggableImage.java</file>
+            <file>file:/Users/aaronsuen/NetBeansProjects/Metro_Map_Maker/MetroMapMaker/src/m3/gui/MapEditController.java</file>
+            <file>file:/Users/aaronsuen/NetBeansProjects/Metro_Map_Maker/MetroMapMaker/src/m3/data/m3Data.java</file>
+            <file>file:/Users/aaronsuen/NetBeansProjects/Metro_Map_Maker/MetroMapMaker/src/m3/gui/LineEditDialogSingleton.java</file>
+            <file>file:/Users/aaronsuen/NetBeansProjects/Metro_Map_Maker/MetroMapMaker/src/m3/data/DraggableLine.java</file>
         </group>
     </open-files>
 </project-private>

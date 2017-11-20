@@ -25,13 +25,12 @@ public class DraggableStation extends Ellipse implements Draggable{
      * Contrustor for initialing DraggableStation with default data.
      */       
     public DraggableStation() {
-	setCenterX(0.0);
-	setCenterY(0.0);
-	setRadiusX(0.0);
-	setRadiusY(0.0);
+	setRadiusX(5.0);
+	setRadiusY(5.0);
 	setOpacity(1.0);
 	startCenterX = 0.0;
 	startCenterY = 0.0;
+        nameLabel = new DraggableLabel();
     }
 
     /**
@@ -54,6 +53,8 @@ public class DraggableStation extends Ellipse implements Draggable{
     public void start(int x, int y) {
 	startCenterX = x;
 	startCenterY = y;
+	setCenterX(x);
+	setCenterY(y);        
     }
 
     /**
@@ -156,16 +157,18 @@ public class DraggableStation extends Ellipse implements Draggable{
      */    
     public void setName(String initName){
         name = initName;
+        setNameLabel();
     }
     
     /**
      * The Accessor method to set the DraggableLable of this station.
      */
-    public void setDraggableLable(){
-        if(name != null){
-            nameLabel = new DraggableLabel();
+    private void setNameLabel(){
+        if(name != null){    
             nameLabel.setText(name);
-        }
+            nameLabel.setX(startCenterX + getRadiusX());
+            nameLabel.setY(startCenterY+ getRadiusY());
+        }    
     }
     
     /**
@@ -185,6 +188,13 @@ public class DraggableStation extends Ellipse implements Draggable{
     public Color getColor(){
         return stationColor;
     }
+    
+    /**
+     * The Accessor method to set the DraggableLable of this station.
+     */
+    public DraggableLabel getNameLabel(){
+        return nameLabel;
+    }    
     
     /**
      * This method moves the label clockwisely.
