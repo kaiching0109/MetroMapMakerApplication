@@ -45,6 +45,7 @@ import m3.gui.m3Workspace;
 import m3.transactions.AddNode_Transaction;
 import m3.transactions.ChangeBackground_Transaction;
 import m3.transactions.RemoveNode_Transaction;
+import properties_manager.PropertiesManager;
 
 /**
  * This class serves as the data management component for this application.
@@ -398,6 +399,7 @@ public class m3Data implements AppDataComponent {
 	DraggableLine newLine = new DraggableLine();
         String lineName = InfoRequireDialogSingleton.getSingleton().getName();
 	newLine.start(x, y); 
+        newLine.getPoints().setAll(new Double[]{(double)x, (double)y}); 
         newLine.setColor(InfoRequireDialogSingleton.getSingleton().getColorPicker().getValue());
         newLine.setName(lineName);
         workspace.getLineNameBox().getItems().add(lineName);
@@ -476,22 +478,6 @@ public class m3Data implements AppDataComponent {
             stationListingDialog.show("Metro Map Maker - Metro Line Stops", "");
         } //endIf
         */
-    }
-    
-    /**
-     * This method is used to show the line edit dialog for prompting the user
-     * for information of the selected line.
-     */
-    public void showLineEditDialog(){
-        LineEditDialogSingleton lineEditDialog = LineEditDialogSingleton.getSingleton();
-        //SEARCH FOR LINE
-        m3Workspace workspace = (m3Workspace)app.getWorkspaceComponent();
-        String lineName = (String)workspace.getLineNameBox().getValue();
-        if(searchNode(lineName)){
-            DraggableLine line = (DraggableLine)selectedNode;
-            lineEditDialog.setLine(line);
-            lineEditDialog.show("Metro Map Maker - Metro Line Stops", "");
-        } //endIf        
     }
  
     /**

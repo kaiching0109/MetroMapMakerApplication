@@ -93,9 +93,6 @@ public class InfoRequireDialogSingleton extends Stage{
         
         colorPicker = new ColorPicker();
         colorPicker.setValue(Color.valueOf(BLACK_HEX));
-        colorPicker.setOnAction(e->{
-           //SET THE COLOR BACK TO DATA CLASS
-        });
         InfoReuirePane.getChildren().add(colorPicker);  
         
         //SET OKBUTTON

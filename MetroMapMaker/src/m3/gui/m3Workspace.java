@@ -52,8 +52,10 @@ import static djf.settings.AppPropertyType.ZOOMOUT_TOOLTIP;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javafx.beans.binding.Bindings;
 import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Scene;
@@ -93,7 +95,9 @@ import static m3.css.m3Style.CLASS_EDIT_TOOLBAR;
 import static m3.css.m3Style.CLASS_EDIT_TOOLBAR_ROW;
 import static m3.css.m3Style.CLASS_FIND_BUTTON_SIZE;
 import static m3.css.m3Style.CLASS_RENDER_CANVAS;
+import static m3.css.m3Style.ROUND_BUTTON;
 import m3.data.DraggableLine;
+import m3.data.DraggableStation;
 import m3.data.m3Data;
 import static m3.data.m3Data.WHITE_HEX;
 import m3.data.m3State;
@@ -232,6 +236,7 @@ public class m3Workspace extends AppWorkspaceComponent{
     AppMessageDialogSingleton messageDialog;
     AppYesNoCancelDialogSingleton yesNoCancelDialog;
     AppWelcomeDialogSingleton appWelcomeDialog; 
+    LineEditDialogSingleton lineEditDialog;
     
     // FOR DISPLAYING DEBUG STUFF
     Text debugText;
@@ -399,10 +404,10 @@ public class m3Workspace extends AppWorkspaceComponent{
         space = new Pane();
         row1HBox1.setHgrow(space, Priority.ALWAYS);
         stackPaneForLine = new StackPane();
-        editLineButton = gui.initChildButton(stackPaneForLine, "", LINE_EDITOR_TOOLTIP.toString(), true);
-        ellipseForLine = new Ellipse(20, 20);
-        colorHexForFont = new Text();
-        stackPaneForLine.getChildren().addAll(ellipseForLine, colorHexForFont);
+        stackPaneForLine.setPadding(new Insets(10));
+        editLineButton = gui.initChildButton(stackPaneForLine, "", LINE_EDITOR_TOOLTIP.toString(), false);
+        colorHexForLine = new Text();
+        stackPaneForLine.getChildren().add(colorHexForLine);
         editLineButton.getStyleClass().add(CLASS_BUTTON_HGAP_RIGHTMOST);
         row1HBox1.getChildren().addAll(lineLabel, lineNameBox, space, stackPaneForLine);
         
@@ -419,7 +424,7 @@ public class m3Workspace extends AppWorkspaceComponent{
         row1HBox2.getStyleClass().add(CLASS_BUTTON_HGAP);
 //        row1HBox2.getStyleClass().add(CLASS_EDIT_TOOLBAR_BUTTON_SIZE);
         
-        lineThicknessSlider = new Slider(0, 10, 1);
+        lineThicknessSlider = new Slider(2, 10, 1);
         Tooltip lineThicknessSliderTooltip = new Tooltip(props.getProperty(THICKNESS_SLIDER_TOOLTIP.toString()));
         lineThicknessSlider.setTooltip(lineThicknessSliderTooltip);        
         
@@ -454,7 +459,7 @@ public class m3Workspace extends AppWorkspaceComponent{
         row2HBox2.getStyleClass().add(CLASS_BUTTON_HGAP);
 //        row2HBox2.getStyleClass().add(CLASS_EDIT_TOOLBAR_BUTTON_SIZE);
         
-        stationRadiusSlider = new Slider(0, 10, 1);
+        stationRadiusSlider = new Slider(0, 15, 1);
         Tooltip stationRadiusSliderTooltip = new Tooltip(props.getProperty(RADIUS_SLIDER_TOOLTIP.toString()));
         stationRadiusSlider.setTooltip(stationRadiusSliderTooltip);
         
@@ -810,7 +815,28 @@ public class m3Workspace extends AppWorkspaceComponent{
      * @param shape shape is the selected shape
      */
     public void loadSelectedNodeSettings(Node node) {
-	if (node != null) {	    
+	if (node != null) {	
+            if(node instanceof DraggableLine){
+                DraggableLine line = (DraggableLine)node;
+                lineThicknessSlider.setValue(line.getStrokeWidth());
+                lineNameBox.setValue(line.getName());
+                lineEditDialog = LineEditDialogSingleton.getSingleton();
+                lineEditDialog.setLine(line);  
+                colorHexForLine.setText(line.getColor().toString());
+                editLineButton.setStyle(                
+                    "-fx-background-radius: 50px; " +
+                    "-fx-min-width: 50px; " +
+                    "-fx-min-height: 50px; " +
+                    "-fx-max-width: 50px; " +
+                    "-fx-max-height: 50px;" +
+                    "-fx-background-color: " + line.getColor().toString().replace("0x", "#") + " ;"        
+                );
+            }
+            else if(node instanceof DraggableStation){
+                DraggableStation station = (DraggableStation)node;
+                stationRadiusSlider.setValue(station.getRadius());
+                
+            }
 	}
     }
 
@@ -827,6 +853,46 @@ public class m3Workspace extends AppWorkspaceComponent{
         app.getGUI().getFileToolbar().setStyle("-fx-spacing: 10");
         app.getGUI().getUndoToolbar().setStyle("-fx-spacing: 10");
         app.getGUI().getAboutToolbar().setStyle("-fx-spacing: 10");
+        
+        editLineButton.setStyle(                
+                "-fx-background-radius: 50px; " +
+                "-fx-min-width: 50px; " +
+                "-fx-min-height: 50px; " +
+                "-fx-max-width: 50px; " +
+                "-fx-max-height: 50px;" +
+                "-fx-background-color: #ffffff;"
+        );
+        colorHexForLine.setText(Color.valueOf(WHITE_HEX).toString());
+        
+        stationColorPicker.setStyle(                
+                "-fx-background-radius: 50px; " +
+                "-fx-min-width: 50px; " +
+                "-fx-min-height: 50px; " +
+                "-fx-max-width: 50px; " +
+                "-fx-max-height: 50px;" +
+                "-fx-background-color: #ffffff;"
+        );
+        //colorHexForStation.setText(WHITE_HEX);
+        
+        bgColorPicker.setStyle(                
+                "-fx-background-radius: 50px; " +
+                "-fx-min-width: 50px; " +
+                "-fx-min-height: 50px; " +
+                "-fx-max-width: 50px; " +
+                "-fx-max-height: 50px;" +
+                "-fx-background-color: #ffffff;"
+        );
+       // colorHexForBackground.setText(WHITE_HEX);
+        
+        fontColorPicker.setStyle(                
+                "-fx-background-radius: 50px; " +
+                "-fx-min-width: 50px; " +
+                "-fx-min-height: 50px; " +
+                "-fx-max-width: 50px; " +
+                "-fx-max-height: 50px;" +
+                "-fx-background-color: #ffffff;"
+        );        
+        //colorHexForFont.setText(WHITE_HEX);
         
         editToolbar.getChildren().add(metroLinesToolbar);
         editToolbar.getChildren().add(metroStationsToolbar);

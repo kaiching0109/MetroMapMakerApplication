@@ -20,5 +20,6 @@ public class m3Style {
     public static final String CLASS_BUTTON_HGAP_RIGHTMOST = "Hgap_rightMost";
     public static final String CLASS_FIND_BUTTON_SIZE = "sizeOfFindButton";
     //public static final String CLASS_EDIT_TOOLBAR_BUTTON_SIZE = "editToolbar_button";
-    public static final int BUTTON_TAG_WIDTH = 75;    
+    public static final int BUTTON_TAG_WIDTH = 75;   
+    public static final String ROUND_BUTTON = "roundButton";
 }

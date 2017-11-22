@@ -129,7 +129,22 @@ public class MapEditController {
      * the selected line through lineComboBox.
      */
      public void processLineEditting(){
-         dataManager.showLineEditDialog();
+        m3Workspace workspace = (m3Workspace)app.getWorkspaceComponent();
+        LineEditDialogSingleton lineEditDialog = LineEditDialogSingleton.getSingleton();
+        lineEditDialog.show("Metro Map Maker - Metro Line Stops", "");  
+        Color editedColor = lineEditDialog.getLineColorPicker().getValue();
+        String editedName = lineEditDialog.getLineName();
+        ((DraggableLine) dataManager.getSelectedNode()).setColor(editedColor);
+        if(!dataManager.searchLine(editedName)){
+           DraggableLine temp = (DraggableLine) dataManager.getSelectedNode();
+           int index = workspace.getLineNameBox().getItems().indexOf(temp.getName());
+           workspace.getLineNameBox().getItems().set(index, editedName);
+           temp.setName(editedName);
+        } else {
+                PropertiesManager props = PropertiesManager.getPropertiesManager();    
+                AppMessageDialogSingleton dialog = AppMessageDialogSingleton.getSingleton();
+                dialog.show(props.getProperty(LINE_EXISTED_ERROR_TITLE), props.getProperty(LINE_EXISTED_ERROR_MESSAGE));  
+        }      
      }
     
     /**

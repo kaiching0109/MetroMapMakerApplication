@@ -5,6 +5,7 @@
  */
 package m3.data;
 
+import javafx.scene.control.ColorPicker;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Ellipse;
 import javafx.scene.shape.Shape;
@@ -16,17 +17,16 @@ import javafx.scene.shape.Shape;
 public class DraggableStation extends Ellipse implements Draggable{
     double startCenterX;
     double startCenterY;
+    double radius;
     String name;
     Color stationColor;
-    
     DraggableLabel nameLabel;
 
     /**
      * Contrustor for initialing DraggableStation with default data.
      */       
     public DraggableStation() {
-	setRadiusX(5.0);
-	setRadiusY(5.0);
+        setRadius(15.0);
 	setOpacity(1.0);
 	startCenterX = 0.0;
 	startCenterY = 0.0;
@@ -171,6 +171,12 @@ public class DraggableStation extends Ellipse implements Draggable{
         }    
     }
     
+    public void setRadius(double initRadius){
+        radius = initRadius;
+        this.setRadiusX(radius);
+        this.setRadiusY(radius);
+    }
+    
     /**
      * The Accessor method to set the color of this station.
      * 
@@ -178,6 +184,7 @@ public class DraggableStation extends Ellipse implements Draggable{
      */
     public void setColor(Color initColor){
         stationColor = initColor;
+        this.setFill(stationColor);
     }
     
     /**
@@ -231,4 +238,14 @@ public class DraggableStation extends Ellipse implements Draggable{
     public String getName() {
         return name;
     }
+ 
+    /**
+     * The Accessor method to get the name of this station.
+     * 
+     * @return radius the radius of this station
+     */     
+    public double getRadius(){
+        return radius;
+    }
+    
 }

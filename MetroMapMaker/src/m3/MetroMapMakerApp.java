@@ -48,7 +48,7 @@ public class MetroMapMakerApp extends AppTemplate{
         appWelcomeDialog.init(gui.getWindow(), this);       
         workspaceComponent = new m3Workspace(this);
         LineEditDialogSingleton lineEditDialog = LineEditDialogSingleton.getSingleton();
-        lineEditDialog.init(gui.getWindow(), this);    
+        lineEditDialog.init(gui.getWindow());  
         InfoRequireDialogSingleton infoDialog = InfoRequireDialogSingleton.getSingleton();    
         infoDialog.init(gui.getWindow());
         appWelcomeDialog.show("Welcome to the Metro Map Maker", "");
