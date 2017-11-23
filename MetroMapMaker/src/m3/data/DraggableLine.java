@@ -118,7 +118,7 @@ public class DraggableLine extends Polyline implements Draggable{
         startYProperty.bind(lineLabel1.yProperty());
         endXProperty.bind(lineLabel2.xProperty());
         endYProperty.bind(lineLabel2.yProperty());        
-       
+        
             startXProperty.addListener(new ChangeListener<Number>() {
                    @Override public void changed(ObservableValue<? extends Number> ov, Number oldX, Number x) {
                      points.set(0, (double) x);
@@ -138,7 +138,8 @@ public class DraggableLine extends Polyline implements Draggable{
               @Override public void changed(ObservableValue<? extends Number> ov, Number oldY, Number y) {
                 points.set(size - 1, (double) y);
               }
-            });              
+            });   
+        
     }
     
     /**
@@ -248,9 +249,6 @@ public class DraggableLine extends Polyline implements Draggable{
      */    
     private void setLineLabel1(){
         lineLabel1.setContent(name);
-        lineLabel1.setOnMousePressed(e->{
-           // this.getPoints().get(this.get);
-        });
     }
     
     /**
@@ -271,8 +269,7 @@ public class DraggableLine extends Polyline implements Draggable{
     public DraggableLabel getLineLabel2(){
         return lineLabel2;
     }
-    
- 
+
     /**
      * This method is used to set the color of the line.
      * 
@@ -280,7 +277,6 @@ public class DraggableLine extends Polyline implements Draggable{
      */      
     public void setColor(Color initColor){
         color = initColor;
-        this.setFill(color);
         this.setStroke(color);
     }
 

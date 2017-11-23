@@ -37,6 +37,7 @@ import djf.ui.AppMessageDialogSingleton;
 import javafx.scene.Node;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.ComboBox;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.stage.Stage;
@@ -130,21 +131,39 @@ public class MapEditController {
      */
      public void processLineEditting(){
         m3Workspace workspace = (m3Workspace)app.getWorkspaceComponent();
+        ComboBox lineNameBox = workspace.getLineNameBox();
         LineEditDialogSingleton lineEditDialog = LineEditDialogSingleton.getSingleton();
         lineEditDialog.show("Metro Map Maker - Metro Line Stops", "");  
+        
+        //Get the selected Line from data class.
+        dataManager.searchLine((String)lineNameBox.getValue());
+        DraggableLine selectedLine = (DraggableLine)dataManager.getSelectedNode();
+        String selectedLineName = selectedLine.getName();
+        
+        //Get the color and name that might be changed.
         Color editedColor = lineEditDialog.getLineColorPicker().getValue();
         String editedName = lineEditDialog.getLineName();
-        ((DraggableLine) dataManager.getSelectedNode()).setColor(editedColor);
-        if(!dataManager.searchLine(editedName)){
-           DraggableLine temp = (DraggableLine) dataManager.getSelectedNode();
-           int index = workspace.getLineNameBox().getItems().indexOf(temp.getName());
-           workspace.getLineNameBox().getItems().set(index, editedName);
-           temp.setName(editedName);
-        } else {
+        
+        //Set new color
+        selectedLine.setColor(editedColor);
+        
+        //Check if name has modified
+        if(!selectedLineName.equals(editedName)){
+            
+            //Check if new name existed and replace the name if it doesn't
+            if(!dataManager.searchLine(editedName)){
+                selectedLine.setName(editedName);
+                int index = lineNameBox.getItems().indexOf(selectedLineName);
+                lineNameBox.getItems().set(index, editedName);
+                //lineNameBox.getSelectionModel().select(index);
+            } //endIf
+            else{
                 PropertiesManager props = PropertiesManager.getPropertiesManager();    
                 AppMessageDialogSingleton dialog = AppMessageDialogSingleton.getSingleton();
-                dialog.show(props.getProperty(LINE_EXISTED_ERROR_TITLE), props.getProperty(LINE_EXISTED_ERROR_MESSAGE));  
-        }      
+                dialog.show(props.getProperty(LINE_EXISTED_ERROR_TITLE), props.getProperty(LINE_EXISTED_ERROR_MESSAGE));                  
+            } //endElse       
+        } //endIf
+        workspace.loadSelectedNodeSettings(selectedLine);
      }
     
     /**
@@ -154,7 +173,6 @@ public class MapEditController {
         // CHANGE THE CURSOR
         m3Data data = (m3Data)app.getDataComponent();
         Scene scene = app.getGUI().getPrimaryScene();
-        Stage stage = app.getGUI().getWindow();
         InfoRequireDialogSingleton infoDialog = InfoRequireDialogSingleton.getSingleton();    
         infoDialog.show("Add New Line", "");
         scene.setCursor(Cursor.CROSSHAIR);
@@ -271,7 +289,6 @@ public class MapEditController {
         m3Workspace workspace = (m3Workspace)app.getWorkspaceComponent();
         // CHANGE THE CURSOR
         Scene scene = app.getGUI().getPrimaryScene();
-        Stage stage = app.getGUI().getWindow();
         scene.setCursor(Cursor.CROSSHAIR);
         InfoRequireDialogSingleton infoDialog = InfoRequireDialogSingleton.getSingleton();
         infoDialog.show("Add New Station", "");        

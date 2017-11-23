@@ -224,7 +224,7 @@ public class m3Data implements AppDataComponent {
      * @return Boolean
      */           
      public Boolean searchLine(String lineName){
-        //COMPARE NODE FROM THE COLLECTION    
+        m3Workspace workspace = (m3Workspace)app.getWorkspaceComponent();      
         Node foundNode = null;
         for(DraggableLine temp: m3Lines){ 
             if(temp.getName().equals(lineName))
@@ -360,9 +360,11 @@ public class m3Data implements AppDataComponent {
      * SIZING_SHAPE
      */       
     public void selectSizedShape() {
+        m3Workspace workspace = (m3Workspace)app.getWorkspaceComponent();    
 	if (selectedNode != null)
 	    unhighlightNode(selectedNode);
 	selectedNode = newShape;
+        workspace.loadSelectedNodeSettings(selectedNode);
 	highlightNode(selectedNode);
 	newShape = null;  
 	if (state == SIZING_SHAPE) {
