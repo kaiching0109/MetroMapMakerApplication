@@ -5,7 +5,7 @@
             <url>src/m3/gui/m3Workspace.java</url>
             <bookmark id="1">
                 <name/>
-                <line>793</line>
+                <line>785</line>
                 <key/>
             </bookmark>
         </file>
@@ -13,18 +13,19 @@
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
             <file>file:/Users/aaronsuen/NetBeansProjects/Metro_Map_Maker/MetroMapMaker/src/m3/MetroMapMakerApp.java</file>
+            <file>file:/Users/aaronsuen/NetBeansProjects/Metro_Map_Maker/MetroMapMaker/src/m3/gui/ImageAndLabelController.java</file>
             <file>file:/Users/aaronsuen/NetBeansProjects/Metro_Map_Maker/MetroMapMaker/src/m3/gui/InfoRequireDialogSingleton.java</file>
-            <file>file:/Users/aaronsuen/NetBeansProjects/Metro_Map_Maker/MetroMapMaker/src/m3/data/DraggableImage.java</file>
             <file>file:/Users/aaronsuen/NetBeansProjects/Metro_Map_Maker/MetroMapMaker/src/m3/gui/m3Workspace.java</file>
+            <file>file:/Users/aaronsuen/NetBeansProjects/Metro_Map_Maker/MetroMapMaker/src/m3/data/DraggableImage.java</file>
             <file>file:/Users/aaronsuen/NetBeansProjects/Metro_Map_Maker/MetroMapMaker/src/m3/data/m3Data.java</file>
             <file>file:/Users/aaronsuen/NetBeansProjects/Metro_Map_Maker/MetroMapMaker/src/m3/gui/LineEditDialogSingleton.java</file>
-            <file>file:/Users/aaronsuen/NetBeansProjects/Metro_Map_Maker/MetroMapMaker/src/m3/data/Draggable.java</file>
             <file>file:/Users/aaronsuen/NetBeansProjects/Metro_Map_Maker/MetroMapMaker/src/m3/data/DraggableLine.java</file>
             <file>file:/Users/aaronsuen/NetBeansProjects/Metro_Map_Maker/MetroMapMaker/src/m3/data/DraggableStation.java</file>
             <file>file:/Users/aaronsuen/NetBeansProjects/Metro_Map_Maker/MetroMapMaker/src/m3/css/m3Style.java</file>
             <file>file:/Users/aaronsuen/NetBeansProjects/Metro_Map_Maker/MetroMapMaker/src/m3/data/DraggableLabel.java</file>
             <file>file:/Users/aaronsuen/NetBeansProjects/Metro_Map_Maker/MetroMapMaker/src/m3/gui/CanvasController.java</file>
             <file>file:/Users/aaronsuen/NetBeansProjects/Metro_Map_Maker/MetroMapMaker/src/m3/gui/MapEditController.java</file>
+            <file>file:/Users/aaronsuen/NetBeansProjects/Metro_Map_Maker/MetroMapMaker/src/m3/gui/LineStationListingDialogSingleton.java</file>
         </group>
     </open-files>
 </project-private>

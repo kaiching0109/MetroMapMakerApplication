@@ -50,13 +50,8 @@ import static djf.settings.AppPropertyType.ZOOMIN_TOOLTIP;
 import static djf.settings.AppPropertyType.ZOOMOUT_ICON;
 import static djf.settings.AppPropertyType.ZOOMOUT_TOOLTIP;
 import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javafx.beans.binding.Bindings;
-import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
-import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -416,9 +411,9 @@ public class m3Workspace extends AppWorkspaceComponent{
         row1HBox2 = new HBox();
         addLineButton = gui.initChildButton(row1HBox2, ADD_ICON.toString(), ADD_LINE_TOOLTIP.toString(), false);
         removeLineButton = gui.initChildButton(row1HBox2, REMOVE_ICON.toString(), REMOVE_LINE_TOOLTIP.toString(), false);
-        addStationsToLineButton = gui.initChildButton(row1HBox2, "", ADD_STATION_ON_LINE_TOOLTIP.toString(), true);
+        addStationsToLineButton = gui.initChildButton(row1HBox2, "", ADD_STATION_ON_LINE_TOOLTIP.toString(), false);
         addStationsToLineButton.setText("Add\nStation");
-        removeStationsFromLineButton = gui.initChildButton(row1HBox2, "", REMOVE_STATION_FROM_LINE_TOOLTIP.toString(), true);
+        removeStationsFromLineButton = gui.initChildButton(row1HBox2, "", REMOVE_STATION_FROM_LINE_TOOLTIP.toString(), false);
         removeStationsFromLineButton.setText("Remove\nStation");
         stationsListButton = gui.initChildButton(row1HBox2, LIST_ICON.toString(), LIST_TOOLTIP.toString(), false);       
         row1HBox2.getStyleClass().add(CLASS_BUTTON_HGAP);
@@ -439,11 +434,8 @@ public class m3Workspace extends AppWorkspaceComponent{
         stationColorPicker = new ColorPicker(Color.valueOf(WHITE_HEX)); 
         space = new Pane();
         stackPaneForStation = new StackPane();
-        ellipseForStation = new Ellipse(20, 20);
-        ellipseForStation.setFill(stationColorPicker.getValue());
-        colorHexForStation = new Text(stationColorPicker.getValue().toString());
-        
-        stackPaneForStation.getChildren().addAll(stationColorPicker, ellipseForStation, colorHexForStation);
+        colorHexForStation = new Text(); 
+        stackPaneForStation.getChildren().addAll(stationColorPicker, colorHexForStation);
         row2HBox1.setHgrow(space, Priority.ALWAYS);
         row2HBox1.getChildren().addAll(stationLabel, stationNameBox, space, stackPaneForStation);
         row2HBox1.getStyleClass().add(CLASS_BUTTON_HGAP);
@@ -812,7 +804,7 @@ public class m3Workspace extends AppWorkspaceComponent{
      * This function is used to load the info of the shape.
      * eg: Color
      * The loading info depends on the type of the shape,
-     * @param shape shape is the selected shape
+     * @param node node is the selected node
      */
     public void loadSelectedNodeSettings(Node node) {
 	if (node != null) {	
@@ -822,20 +814,15 @@ public class m3Workspace extends AppWorkspaceComponent{
                 lineNameBox.setValue(line.getName());
                 lineEditDialog = LineEditDialogSingleton.getSingleton();
                 lineEditDialog.setLine(line);  
-                colorHexForLine.setText(line.getColor().toString());
-                editLineButton.setStyle(                
-                    "-fx-background-radius: 50px; " +
-                    "-fx-min-width: 50px; " +
-                    "-fx-min-height: 50px; " +
-                    "-fx-max-width: 50px; " +
-                    "-fx-max-height: 50px;" +
-                    "-fx-background-color: " + line.getColor().toString().replace("0x", "#") + " ;"        
-                );
-            }
-            else if(node instanceof DraggableStation){
+                updateLineEditButtonStyle(line.getColor());               
+ 
+            } else if(node instanceof DraggableStation){  
                 DraggableStation station = (DraggableStation)node;
                 stationRadiusSlider.setValue(station.getRadius());
-                
+                stationNameBox.setValue(station.getName());
+                stationColorPicker.setValue(station.getColor());
+                colorHexForStation.setText(station.getColor().toString());
+                updateStationColorPickerStyle(station.getColor());   
             }
 	}
     }
@@ -854,25 +841,9 @@ public class m3Workspace extends AppWorkspaceComponent{
         app.getGUI().getUndoToolbar().setStyle("-fx-spacing: 10");
         app.getGUI().getAboutToolbar().setStyle("-fx-spacing: 10");
         
-        editLineButton.setStyle(                
-                "-fx-background-radius: 50px; " +
-                "-fx-min-width: 50px; " +
-                "-fx-min-height: 50px; " +
-                "-fx-max-width: 50px; " +
-                "-fx-max-height: 50px;" +
-                "-fx-background-color: #ffffff;"
-        );
-        colorHexForLine.setText(Color.valueOf(WHITE_HEX).toString());
+        updateLineEditButtonStyle(Color.valueOf(WHITE_HEX));
         
-        stationColorPicker.setStyle(                
-                "-fx-background-radius: 50px; " +
-                "-fx-min-width: 50px; " +
-                "-fx-min-height: 50px; " +
-                "-fx-max-width: 50px; " +
-                "-fx-max-height: 50px;" +
-                "-fx-background-color: #ffffff;"
-        );
-        //colorHexForStation.setText(WHITE_HEX);
+        updateStationColorPickerStyle(Color.valueOf(WHITE_HEX));
         
         bgColorPicker.setStyle(                
                 "-fx-background-radius: 50px; " +
@@ -922,7 +893,31 @@ public class m3Workspace extends AppWorkspaceComponent{
         appWelcomeDialog.getRecentWorkBar().setStyle("-fx-background-color: #ddddff");
         appWelcomeDialog.getRecentWorkLabel().setStyle("-fx-font-weight:bold;");
     }
-
+    
+    public void updateLineEditButtonStyle(Color color){
+        editLineButton.setStyle(                
+                "-fx-background-radius: 50px; " +
+                "-fx-min-width: 50px; " +
+                "-fx-min-height: 50px; " +
+                "-fx-max-width: 50px; " +
+                "-fx-max-height: 50px;" +
+                "-fx-background-color: " +   color.toString().replace("0x", "#") + " ;" 
+        );
+        colorHexForLine.setText(color.toString());
+    }
+    
+    public void updateStationColorPickerStyle(Color color){
+             stationColorPicker.setStyle(                    
+                    "-fx-background-radius: 50px; " +
+                    "-fx-min-width: 50px; " +
+                    "-fx-min-height: 50px; " +
+                    "-fx-max-width: 50px; " +
+                    "-fx-max-height: 50px;" +
+                    "-fx-background-color: " +   color.toString().replace("0x", "#") + " ;" 
+             );        
+             colorHexForStation.setText(color.toString());
+    }
+    
     /**
      * This function reloads all the controls for editing logos
      * the workspace.

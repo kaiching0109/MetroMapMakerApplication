@@ -9,10 +9,10 @@ import com.sun.corba.se.impl.orbutil.graph.Graph;
 import djf.components.AppDataComponent;
 import djf.AppTemplate;
 import java.util.ArrayList;
-import javafx.collections.FXCollections;
+import java.util.Collections;
+import java.util.Comparator;
 import javafx.collections.ObservableList;
 import javafx.scene.Node;
-import javafx.scene.control.ListCell;
 import javafx.scene.effect.BlurType;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.effect.Effect;
@@ -36,10 +36,13 @@ import static m3.data.Draggable.LABEL;
 import static m3.data.Draggable.LINE;
 import static m3.data.Draggable.STATION;
 import static m3.data.m3State.SELECTING_SHAPE;
-import static m3.data.m3State.SIZING_LINE;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map.Entry;
+import java.util.Set;
 import static m3.data.m3State.SIZING_SHAPE;
 import m3.gui.InfoRequireDialogSingleton;
-import m3.gui.LineEditDialogSingleton;
 import m3.gui.LineStationListingDialogSingleton;
 import m3.gui.m3Workspace;
 import m3.transactions.AddNode_Transaction;
@@ -183,7 +186,6 @@ public class m3Data implements AppDataComponent {
 	canvas.setBackground(background);
 	// FINALLY, ADD A TRANSACTION FOR CHANGING BACKGROUND
         jTPS tps = app.getTPS();
-        m3Data data = (m3Data)app.getDataComponent();
         ChangeBackground_Transaction newTransaction = new ChangeBackground_Transaction(canvas, backgroundColor);
         tps.addTransaction(newTransaction);        
     }
@@ -223,8 +225,7 @@ public class m3Data implements AppDataComponent {
      * @param lineName name of the line
      * @return Boolean
      */           
-     public Boolean searchLine(String lineName){
-        m3Workspace workspace = (m3Workspace)app.getWorkspaceComponent();      
+     public Boolean searchLine(String lineName){     
         Node foundNode = null;
         for(DraggableLine temp: m3Lines){ 
             if(temp.getName().equals(lineName))
@@ -255,7 +256,8 @@ public class m3Data implements AppDataComponent {
                 foundNode = temp;   
         }        
         if(foundNode != null){
-            unhighlightNode(selectedNode);
+            if(selectedNode != null)
+                unhighlightNode(selectedNode);
             highlightNode(foundNode);
             selectedNode = foundNode;
             return true;
@@ -406,8 +408,16 @@ public class m3Data implements AppDataComponent {
         newLine.setName(lineName);
         workspace.getLineNameBox().getItems().add(lineName);
 	newShape = newLine;
-        m3Nodes.add(newLine.getLineLabel1());
-        m3Nodes.add(newLine.getLineLabel2());
+        DraggableLabel label1 = newLine.getLineLabel1();
+        DraggableLabel label2 = newLine.getLineLabel2();
+        label1.setOnMouseClicked(e->{
+            workspace.loadSelectedNodeSettings(newLine);
+        });
+        label2.setOnMouseClicked(e->{
+            workspace.loadSelectedNodeSettings(newLine);            
+        });
+        m3Nodes.add(label1);
+        m3Nodes.add(label2);
         //setState(SIZING_LINE);
 	initNewShape();
     }
@@ -426,6 +436,10 @@ public class m3Data implements AppDataComponent {
         newStation.setName(stationName);
         newStation.setColor(InfoRequireDialogSingleton.getSingleton().getColorPicker().getValue());
         workspace.getStationNameBox().getItems().add(stationName);
+        DraggableLabel nameLabel = newStation.getNameLabel();
+        nameLabel.setOnMouseClicked(e->{
+            workspace.loadSelectedNodeSettings(newStation);
+        });        
         addNode(newStation.getNameLabel());
         newStation.setStroke(STROKE_COLOR);
 	newShape = newStation;
@@ -471,8 +485,13 @@ public class m3Data implements AppDataComponent {
         LineStationListingDialogSingleton stationListingDialog = LineStationListingDialogSingleton.getSingleton();
         //SEARCH FOR LINE
         m3Workspace workspace = (m3Workspace)app.getWorkspaceComponent();
-        DraggableLine line = (DraggableLine)workspace.getLineNameBox().getValue();
-        String lineName = line.getName();
+        if(searchLine((String)workspace.getLineNameBox().getValue())){
+            DraggableLine line = (DraggableLine)selectedNode;
+            sortStations(line);
+            stationListingDialog.setLine(line);
+            stationListingDialog.show("Metro Map Maker - Metro Line Stops", "");
+        }
+        
         /*
         if(searchNode(lineName)){
             DraggableLine line = (DraggableLine)selectedNode;
@@ -582,6 +601,59 @@ public class m3Data implements AppDataComponent {
     public boolean isInState(m3State testState) {
 	return state == testState;
     }
+    
+    public void addStationsToLine(int x, int y, DraggableStation stationToAdd){
+        m3Workspace workspace = (m3Workspace)app.getWorkspaceComponent();
+        if(searchLine((String)workspace.getLineNameBox().getValue())){
+            DraggableLine selectedLine = (DraggableLine)selectedNode;
+            System.out.println("START");
+            if(selectedLine.contains(x, y)){   
+                selectedLine.addStation(stationToAdd);
+                stationToAdd.centerXProperty().set(x);
+                stationToAdd.centerYProperty().set(y);
+                stationToAdd.addLine(selectedLine);
+            } //endIf
+        }    
+    }
+    
+    public void removeStationFromLine(DraggableStation stationToRemove){
+        m3Workspace workspace = (m3Workspace)app.getWorkspaceComponent();
+        if(searchLine((String)workspace.getLineNameBox().getValue())){
+            DraggableLine selectedLine = (DraggableLine)selectedNode;
+            ArrayList<DraggableStation> list = selectedLine.getListOfStations();
+            if(list.contains(stationToRemove)){
+                list.remove(stationToRemove);
+                stationToRemove.removeLine(selectedLine);
+            }    
+        } //endIf
+    }
+    
+    private void sortStations(DraggableLine line){
+        HashMap<DraggableStation, Integer> hashMap = new HashMap<DraggableStation, Integer>();
+        ArrayList<DraggableStation> listOfStations = line.getListOfStations();
+        for(int i = 0; i < listOfStations.size(); i++){
+            DraggableStation station = listOfStations.get(i);
+            double lineX = line.getPoints().get(0);
+            double lineY = line.getPoints().get(1);
+            double distance = line.getDistance(lineX, lineY, station.getCenterX(), station.getCenterY());
+            hashMap.put(listOfStations.get(i), (int)distance);
+        }
+        
+        Set<Entry<DraggableStation,Integer>> mapEntries = hashMap.entrySet();
+        List<Entry<DraggableStation,Integer>> list = new LinkedList<Entry<DraggableStation,Integer>>(mapEntries);
+        Collections.sort(list, new Comparator<Entry<DraggableStation,Integer>>() {
+
+            @Override
+            public int compare(Entry<DraggableStation, Integer> ele1, Entry<DraggableStation, Integer> ele2) {
+               return ele1.getValue().compareTo(ele2.getValue());
+            }
+        }); 
+        
+        for(int i = 0; i < list.size(); i++){
+            DraggableStation station = list.get(i).getKey();
+            listOfStations.set(i, station);
+        } //endFor
+    }    
     
     /**
      * The method remove a shape from our collection of m3Nodes

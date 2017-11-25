@@ -5,7 +5,7 @@
  */
 package m3.data;
 
-import javafx.scene.control.ColorPicker;
+import java.util.ArrayList;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Ellipse;
 import javafx.scene.shape.Shape;
@@ -21,6 +21,7 @@ public class DraggableStation extends Ellipse implements Draggable{
     String name;
     Color stationColor;
     DraggableLabel nameLabel;
+    ArrayList<DraggableLine> listOfLines = new ArrayList<>();
 
     /**
      * Contrustor for initialing DraggableStation with default data.
@@ -31,6 +32,8 @@ public class DraggableStation extends Ellipse implements Draggable{
 	startCenterX = 0.0;
 	startCenterY = 0.0;
         nameLabel = new DraggableLabel();
+        nameLabel.xProperty().bind(this.centerXProperty().add(10));
+        nameLabel.yProperty().bind(this.centerYProperty().add(10));        
     }
 
     /**
@@ -164,10 +167,9 @@ public class DraggableStation extends Ellipse implements Draggable{
      * The Accessor method to set the DraggableLable of this station.
      */
     private void setNameLabel(){
-        if(name != null){    
+        if(name != null){
             nameLabel.setText(name);
-            nameLabel.setX(startCenterX + getRadiusX());
-            nameLabel.setY(startCenterY+ getRadiusY());
+            nameLabel.setIsBinded();
         }    
     }
     
@@ -187,6 +189,36 @@ public class DraggableStation extends Ellipse implements Draggable{
         this.setFill(stationColor);
     }
     
+    
+    /**
+     * The Accessor method to add the line into the collection for this station.
+     * 
+     * @param lineToAdd line to add
+     */    
+    public void addLine(DraggableLine lineToAdd){
+        if(lineToAdd != null)
+            listOfLines.add(lineToAdd);
+    }
+    
+    /**
+     * The Accessor method to remove the line into the collection for this station.
+     * 
+     * @param lineToRemove line to remove
+     */        
+    public void removeLine(DraggableLine lineToRemove){
+        if(lineToRemove != null)
+            listOfLines.remove(lineToRemove);
+    }
+    
+    /**
+     * The Accessor method to set the list into the collection for this station.
+     * 
+     * @param listToSet list to set
+     */      
+    public void setListOfLine(ArrayList<DraggableLine> listToSet){
+        listOfLines = listToSet;
+    }
+    
     /**
      * The Accessor method to get this station color.
      * 
@@ -198,6 +230,7 @@ public class DraggableStation extends Ellipse implements Draggable{
     
     /**
      * The Accessor method to set the DraggableLable of this station.
+     * @return nameLabel
      */
     public DraggableLabel getNameLabel(){
         return nameLabel;
@@ -246,6 +279,15 @@ public class DraggableStation extends Ellipse implements Draggable{
      */     
     public double getRadius(){
         return radius;
+    }
+  
+    /**
+     * The Accessor method to get the line collection of this station.
+     * 
+     * @return listOfLines
+     */        
+    public ArrayList<DraggableLine> getListOfLines(){
+        return listOfLines;
     }
     
 }

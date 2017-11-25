@@ -6,14 +6,11 @@
 package m3.data;
 
 import java.util.ArrayList;
-import java.util.ListIterator;
 import javafx.beans.property.DoubleProperty;
-import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableList;
-import javafx.scene.control.ColorPicker;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Polyline;
 import javafx.scene.shape.Shape;
@@ -31,7 +28,7 @@ public class DraggableLine extends Polyline implements Draggable{
     Color color;
     DraggableLabel lineLabel1;
     DraggableLabel lineLabel2;
-    ArrayList<DraggableStation> listOfStations= new ArrayList<>();
+    ArrayList<DraggableStation> listOfStations = new ArrayList<>();
 
     /**
      * Contrustor for initialing DraggableLine with default data.
@@ -42,12 +39,8 @@ public class DraggableLine extends Polyline implements Draggable{
         endX = 0.0;
         endY = 0.0;
         this.setStrokeWidth(5);
-        lineLabel1 = new DraggableLabel();
-        lineLabel1.setX(startX);
-        lineLabel1.setY(startY);        
-        lineLabel2 = new DraggableLabel();
-        lineLabel2.setX(endX);
-        lineLabel2.setY(endY);
+        setLineLabel1();
+        setLineLabel2();
     }
 
     /**
@@ -240,15 +233,17 @@ public class DraggableLine extends Polyline implements Draggable{
     @Override
     public void setName(String initName){
         name = initName;
-        setLineLabel1();
-        setLineLabel2();
+        lineLabel1.setContent(name);
+        lineLabel2.setContent(name);
     }
 
     /**
      * This method is used to set the label of the line.
      */    
     private void setLineLabel1(){
-        lineLabel1.setContent(name);
+        lineLabel1 = new DraggableLabel();
+        lineLabel1.setX(startX);
+        lineLabel1.setY(startY);  
     }
     
     /**
@@ -256,10 +251,9 @@ public class DraggableLine extends Polyline implements Draggable{
      */   
     
     private void setLineLabel2(){
-        lineLabel2.setContent(name);    
-        lineLabel2.setOnMousePressed(e->{
-            
-        });        
+        lineLabel2 = new DraggableLabel();
+        lineLabel2.setX(startX);
+        lineLabel2.setY(startY);  
     }
     
     public DraggableLabel getLineLabel1(){
@@ -295,7 +289,7 @@ public class DraggableLine extends Polyline implements Draggable{
      * @param newStation station to add
      */      
     public void addStation(DraggableStation newStation){
-        
+        listOfStations.add(newStation);
     }
    
     /**
@@ -304,7 +298,7 @@ public class DraggableLine extends Polyline implements Draggable{
      * @param removeStation station to remove
      */     
     public void removeStation(DraggableStation removeStation){
-        
+        listOfStations.remove(removeStation);
     }
    
     /**
@@ -330,10 +324,14 @@ public class DraggableLine extends Polyline implements Draggable{
     /**
      * The Accessor method to get the length.
      *
+     * @param x1
+     * @param x2
+     * @param y1
+     * @param y2
      * @return length of the Line
      */     
-    public double getLength(){
-        return Math.sqrt((endX-startX)*(endX-startX)+(endY-startY)*(endY-startY));
+    public double getDistance(double x1, double y1, double x2, double y2){
+        return Math.sqrt((x2-x1)*(x2-x1)+(y2-y1)*(y2-y1));
     }
     
     /**

@@ -9,9 +9,6 @@ import java.util.Optional;
 import javafx.scene.control.TextInputDialog;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Shape;
-import javafx.scene.text.Font;
-import javafx.scene.text.FontPosture;
-import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 
 /**
@@ -22,15 +19,16 @@ public class DraggableLabel extends Text implements Draggable{
     double startX;
     double startY;
     String text;
+    Boolean isBinded;
 
     /**
      * Contrustor for initialing DraggableLabel with default data.
      * This should be called if the label doesn't belong
      */    
     public DraggableLabel(){
-        setFunction();
         setOpacity(1.0);
         setFill(Color.BLACK);
+        isBinded = false;
     }
     
     /**
@@ -57,16 +55,16 @@ public class DraggableLabel extends Text implements Draggable{
      */       
     @Override
     public void drag(int x, int y) {
-        //double diffX = x - getX() + 1;
-	//double diffY = y - getY() + 1;
-        double diffX = x - startX;
-	double diffY = y - startY;
-	double newX = getX() + diffX;
-	double newY = getY() + diffY;
-	xProperty().set(newX);
-	yProperty().set(newY);
-	startX = x;
-	startY = y; 
+        if(!isBinded){
+            double diffX = x - startX;
+            double diffY = y - startY;
+            double newX = getX() + diffX;
+            double newY = getY() + diffY;
+            xProperty().set(newX);
+            yProperty().set(newY);
+            startX = x;
+            startY = y; 
+        }    
     }
     
     /**
@@ -76,14 +74,6 @@ public class DraggableLabel extends Text implements Draggable{
      */   
     @Override
     public void size(int x, int y) {	
-    }
-    
-    
-    private void setFunction(){
-        this.setOnMouseClicked(e -> {
-            if (e.getClickCount() == 2)
-                showDialog();
-        });
     }
 
     /**
@@ -108,6 +98,14 @@ public class DraggableLabel extends Text implements Draggable{
         text = initText;
         this.setText(text);  
     }
+    
+    /**
+     * Accessor method that is used to set if the label is binded.
+     * 
+     */               
+    public void setIsBinded(){
+        isBinded = true;
+    }    
  
     /**
      * Accessor method that is used to get the content of this DraggableLabel.
@@ -146,20 +144,9 @@ public class DraggableLabel extends Text implements Draggable{
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
     
-    /**
-     *  This method prompts user to input the content of the label
-     */
-    public void showDialog(){
-        
-        TextInputDialog dialog = new TextInputDialog("Text");
-        dialog.setTitle("Text Insert");
-        dialog.setContentText("Please enter text:");
-       
-        Optional<String> result = dialog.showAndWait();
-        if (result.isPresent()){
-            setContent(result.get());
-        }
-    } 
+    public boolean isBinded(){
+        return isBinded;
+    }
     
     /**
      * The Accessor method to get the shapeType.

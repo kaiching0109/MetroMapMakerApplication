@@ -5,7 +5,7 @@
  */
 package m3.gui;
 
-import djf.AppTemplate;
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -141,8 +141,8 @@ public class LineEditDialogSingleton extends Stage{
         this.setScene(LineEditPaneScene); 
         
         ButtonBox = new HBox();
-        okButton = new Button();
-        cancelButton = new Button();
+        okButton = new Button("ok");
+        cancelButton = new Button("cancel");
         okButton.setOnAction(e->{
             lineName = inputField.getText();
             close();

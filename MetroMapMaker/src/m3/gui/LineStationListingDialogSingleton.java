@@ -5,13 +5,19 @@
  */
 package m3.gui;
 
+import java.util.ArrayList;
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.layout.VBox;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
 import m3.data.DraggableLine;
+import m3.data.DraggableStation;
 
 /**
  * This class serves to present our Line Station Listing Dialog 
@@ -32,6 +38,7 @@ public class LineStationListingDialogSingleton extends Stage{
     Label messageLabel;
     DraggableLine line;
     TextArea routeInfo;
+    Scene infoScene;
 
     final String routeLabelTitleSuffix = " Line Stops";
     /**
@@ -63,20 +70,26 @@ public class LineStationListingDialogSingleton extends Stage{
         line = initLine;
         if(line != null){
             setRouteLabel();
+            setRouteInfo();
         }
     }
     
     private void setRouteLabel(){
         String lineName = line.getName();
-        routeLabel = new Label(lineName + routeLabelTitleSuffix);
+        routeLabel.setText(lineName + routeLabelTitleSuffix);
     }
     
    /**
      * This method prints out all the station(s)
      * that are on the line.
      */      
-    public void printRouteInfo(){
-        
+    public void setRouteInfo(){
+        ArrayList<DraggableStation> listOfStations = line.getListOfStations();
+        String stationList = "";
+        for(DraggableStation station: listOfStations){
+            stationList += "\u2022" + station.getName() + "\n";
+        }
+        routeInfo.setText(stationList);
     }
     
    /**
@@ -87,11 +100,12 @@ public class LineStationListingDialogSingleton extends Stage{
      */    
     public void init(Stage primaryStage){
         
-        messageLabel = new Label();
+        messageLabel = new Label();  
         
-        setRouteLabel();
+        routeLabel = new Label();
+        routeLabel.setFont(Font.font(FontWeight.BOLD.toString(), 24));
         
-        okButton = new Button();
+        okButton = new Button("ok");
         okButton.setAlignment(Pos.CENTER);
         okButton.setOnAction(e->{
             close();
@@ -99,10 +113,13 @@ public class LineStationListingDialogSingleton extends Stage{
         
         routeInfo = new TextArea();
         routeInfo.setEditable(false);
-        printRouteInfo();
         
         infoPane = new VBox();
+        infoPane.setPadding(new Insets(10, 100, 100, 50));
         infoPane.getChildren().addAll(routeLabel, routeInfo, okButton);
+        
+        infoScene = new Scene(infoPane);
+        this.setScene(infoScene);          
     }
     
     /**

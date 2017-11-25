@@ -20,6 +20,7 @@ import m3.file.m3Files;
 import m3.gui.AppWelcomeDialogSingleton;
 import m3.gui.InfoRequireDialogSingleton;
 import m3.gui.LineEditDialogSingleton;
+import m3.gui.LineStationListingDialogSingleton;
 import m3.gui.m3Workspace;
 import properties_manager.PropertiesManager;
 
@@ -51,6 +52,8 @@ public class MetroMapMakerApp extends AppTemplate{
         lineEditDialog.init(gui.getWindow());  
         InfoRequireDialogSingleton infoDialog = InfoRequireDialogSingleton.getSingleton();    
         infoDialog.init(gui.getWindow());
+        LineStationListingDialogSingleton stationlistingDialog = LineStationListingDialogSingleton.getSingleton();
+        stationlistingDialog.init(gui.getWindow());
         appWelcomeDialog.show("Welcome to the Metro Map Maker", "");
         try {
             String selection = appWelcomeDialog.getSelection();

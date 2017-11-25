@@ -34,6 +34,7 @@ import static djf.settings.AppPropertyType.STATION_EXISTED_ERROR_TITLE;
 import static djf.settings.AppStartupConstants.FILE_PROTOCOL;
 import static djf.settings.AppStartupConstants.PATH_IMAGES;
 import djf.ui.AppMessageDialogSingleton;
+import java.util.ArrayList;
 import javafx.scene.Node;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
@@ -123,6 +124,8 @@ public class MapEditController {
     public void processSelectingLine(){
         m3Workspace workspace = (m3Workspace)app.getWorkspaceComponent();
         dataManager.searchLine((String)workspace.getLineNameBox().getValue());
+        workspace.loadSelectedNodeSettings(dataManager.getSelectedNode());
+        //LineEditDialogSingleton lineEditDialog = LineEditDialogSingleton.getSingleton();
     }
     
     /**
@@ -203,7 +206,7 @@ public class MapEditController {
             DraggableLine selectedLine = (DraggableLine)data.getSelectedNode();
             data.removeNode(selectedLine.getLineLabel1());
             data.removeNode(selectedLine.getLineLabel2());
-            data.removeSelectedNode();          
+            data.removeSelectedNode();  
             workspace.getLineNameBox().getItems().remove(lineName);
         } //endIf
     }
@@ -213,13 +216,9 @@ public class MapEditController {
      * on the selected line that is chosen by the user through lineComboBox.
      */
     public void processAddStationOnSelectedLine(){
-        m3Workspace workspace = (m3Workspace)app.getWorkspaceComponent();
         m3Data data = (m3Data)app.getDataComponent();
-        String lineName = (String)workspace.getLineNameBox().getValue();        
-        if(data.searchLine(lineName)){
-            data.setState(ADD_STATION_MODE);
-        }                 
-    }    
+        data.setState(ADD_STATION_MODE);    
+    }
     
     /**
      * This method change the state to REMOVE_STATION_MOVE and helps
@@ -231,8 +230,10 @@ public class MapEditController {
         m3Data data = (m3Data)app.getDataComponent();
         String lineName = (String)workspace.getLineNameBox().getValue();        
         if(data.searchLine(lineName)){
-            data.setState(REMOVE_STATION_MODE);
-        }               
+            data.setState(REMOVE_STATION_MODE);    
+            Scene scene = app.getGUI().getPrimaryScene();
+            scene.setCursor(Cursor.HAND);             
+        }    
     }    
     
     /**
@@ -266,7 +267,8 @@ public class MapEditController {
      */
     public void processSelectingStation(){
         m3Workspace workspace = (m3Workspace)app.getWorkspaceComponent();
-        dataManager.searchStation((String)workspace.getStationNameBox().getValue());       
+        dataManager.searchStation((String)workspace.getStationNameBox().getValue());
+        workspace.loadSelectedNodeSettings(dataManager.getSelectedNode());
     }    
     
     /**
@@ -275,10 +277,15 @@ public class MapEditController {
      */
      public void processFillingStationColor(){
          m3Workspace workspace = (m3Workspace)app.getWorkspaceComponent();
-         if(dataManager.searchStation((String)workspace.getStationNameBox().getValue())){
+         System.out.println((String)workspace.getStationNameBox().getValue());
+         if(dataManager.searchStation((String)(workspace.getStationNameBox().getValue()))){
              DraggableStation station = (DraggableStation)dataManager.getSelectedNode();
              station.setColor(workspace.stationColorPicker.getValue());
-         } //endIf  
+             workspace.loadSelectedNodeSettings(station);         
+         } else {
+             workspace.updateStationColorPickerStyle(workspace.getStationColorPicker().getValue());
+         }
+         
      }    
     
     /**
@@ -288,10 +295,10 @@ public class MapEditController {
     public void processAddingNewStation(){
         m3Workspace workspace = (m3Workspace)app.getWorkspaceComponent();
         // CHANGE THE CURSOR
-        Scene scene = app.getGUI().getPrimaryScene();
-        scene.setCursor(Cursor.CROSSHAIR);
+        Scene scene = app.getGUI().getPrimaryScene(); 
         InfoRequireDialogSingleton infoDialog = InfoRequireDialogSingleton.getSingleton();
-        infoDialog.show("Add New Station", "");        
+        infoDialog.show("Add New Station", "");  
+        scene.setCursor(Cursor.CROSSHAIR);
         // CHANGE THE STATE
         String name = infoDialog.getName();
         if(name != null) {
@@ -318,6 +325,9 @@ public class MapEditController {
         String stationName = (String)workspace.getStationNameBox().getValue();
         if(data.searchStation(stationName)){
             DraggableStation stationToRemove = (DraggableStation)data.getSelectedNode();
+            ArrayList<DraggableLine> list = stationToRemove.getListOfLines();
+            for(DraggableLine line: list)
+                line.getListOfStations().remove(stationToRemove);
             data.removeNode(stationToRemove.getNameLabel());
             data.removeSelectedNode();  
             workspace.getStationNameBox().getItems().remove(stationName);
@@ -362,8 +372,7 @@ public class MapEditController {
         String stationName = (String)workspace.getStationNameBox().getValue(); 
         if(data.searchStation(stationName)){   
             DraggableStation selectStation = (DraggableStation)data.getSelectedNode();
-            selectStation.setRadiusX(radius);
-            selectStation.setRadiusY(radius);
+            selectStation.setRadius(radius);
         } 
         app.getGUI().updateToolbarControls(false);
         workspace.reloadWorkspace(dataManager);        

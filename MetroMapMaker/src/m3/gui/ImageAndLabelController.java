@@ -70,7 +70,7 @@ public class ImageAndLabelController {
         // MAKE AND ADD THE TRANSACTION  
         DraggableLabel labelToAdd = new DraggableLabel();
         m3Workspace workspace = (m3Workspace)app.getWorkspaceComponent();
-        labelToAdd.showDialog();
+        //labelToAdd.showDialog();
         PropertiesManager props = PropertiesManager.getPropertiesManager();
         labelToAdd.xProperty().set(Double.parseDouble(props.getProperty(DEFAULT_NODE_X)));
         labelToAdd.yProperty().set(Double.parseDouble(props.getProperty(DEFAULT_NODE_Y)));

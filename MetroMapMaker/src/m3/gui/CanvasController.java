@@ -11,6 +11,8 @@ import static m3.data.m3State.DRAGGING_SHAPE;
 import static m3.data.m3State.SELECTING_SHAPE;
 import static m3.data.m3State.SIZING_SHAPE;
 import djf.AppTemplate;
+import javafx.scene.Node;
+import m3.data.DraggableLabel;
 import m3.data.DraggableLine;
 import m3.data.DraggableStation;
 
@@ -24,6 +26,9 @@ import m3.data.DraggableStation;
 public class CanvasController {
 
     AppTemplate app;
+    
+    DraggableStation stationToAdd;
+    int addStationModeStage = 1;
     
     /**
      *  Constructor of our canvas 
@@ -71,15 +76,29 @@ public class CanvasController {
         } else if (dataManager.isInState(m3State.ADD_STATION_MODE)){
             Scene scene = app.getGUI().getPrimaryScene();
             scene.setCursor(Cursor.HAND);
-            DraggableLine selectedLine = (DraggableLine) dataManager.getSelectedNode();
-            //if click is on the line
-                //crete new station 
-            //if click elsewhere
-                //quit
+            if(addStationModeStage == 1){
+                Node node = dataManager.selectTopNode(x, y);
+                if(node instanceof DraggableStation){
+                    stationToAdd = (DraggableStation)node;
+                    addStationModeStage++;
+                } else {
+                    scene.setCursor(Cursor.DEFAULT);
+                    dataManager.setState(m3State.SELECTING_SHAPE);               
+                }
+            } else if(addStationModeStage == 2){
+                dataManager.addStationsToLine(x, y, stationToAdd);
+                addStationModeStage = 1;
+            }  
         } else if (dataManager.isInState(m3State.REMOVE_STATION_MODE)){
-            Scene scene = app.getGUI().getPrimaryScene();
-            scene.setCursor(Cursor.HAND);
-            DraggableLine selectedLine = (DraggableLine) dataManager.getSelectedNode();         
+            Node node = dataManager.selectTopNode(x, y);
+                if(node instanceof DraggableStation){
+                   DraggableStation stationToRemove = (DraggableStation)node;
+                   dataManager.removeStationFromLine(stationToRemove);
+                } else {
+                    Scene scene = app.getGUI().getPrimaryScene();
+                    scene.setCursor(Cursor.DEFAULT);
+                    dataManager.setState(m3State.SELECTING_SHAPE);               
+                }            
             //if station is clicked
                 //remove station 
             //if click elsewhere
@@ -108,10 +127,10 @@ public class CanvasController {
                 newDraggableShape.size(x, y);
             }    
         } else if (dataManager.isInState(DRAGGING_SHAPE)) {
-            Draggable selectedDraggableShape = (Draggable) dataManager.getSelectedNode();
-            selectedDraggableShape.drag(x, y);
-            app.getGUI().updateToolbarControls(false);
-        }
+                Draggable selectedDraggableShape = (Draggable) dataManager.getSelectedNode();
+                selectedDraggableShape.drag(x, y);
+                app.getGUI().updateToolbarControls(false);
+        }        
     }
 
     /**
@@ -133,19 +152,20 @@ public class CanvasController {
             app.getGUI().updateToolbarControls(false);
         } else if (dataManager.isInState(m3State.DRAGGING_NOTHING)) {
             dataManager.setState(SELECTING_SHAPE);
-        }
+        } 
     }
     
     public void processCanvasMouseRightClick(){
         Scene scene = app.getGUI().getPrimaryScene();
         m3Data dataManager = (m3Data) app.getDataComponent();
+        if(dataManager.isInState(m3State.SIZING_SHAPE) || dataManager.isInState(m3State.ADDING_STATION)){
+            if(dataManager.getNewShape() instanceof DraggableLine){
+                DraggableLine line = (DraggableLine)dataManager.getNewShape();
+                line.setBindingHeadEnd();
+            }
+            dataManager.selectSizedShape();
+         }
+        scene.setCursor(Cursor.DEFAULT); 
         dataManager.setState(SELECTING_SHAPE);
-        if(dataManager.getNewShape() instanceof DraggableLine){
-            DraggableLine line = (DraggableLine)dataManager.getNewShape();
-            line.setBindingHeadEnd();
         }
-        dataManager.selectSizedShape();
-        scene.setCursor(Cursor.DEFAULT);
-        
-    }
 }
