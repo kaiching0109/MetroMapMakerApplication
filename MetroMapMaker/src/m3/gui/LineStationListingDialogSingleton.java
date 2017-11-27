@@ -84,10 +84,10 @@ public class LineStationListingDialogSingleton extends Stage{
      * that are on the line.
      */      
     public void setRouteInfo(){
-        ArrayList<DraggableStation> listOfStations = line.getListOfStations();
+        ArrayList<String> listOfStations = line.getListOfStations();
         String stationList = "";
-        for(DraggableStation station: listOfStations){
-            stationList += "\u2022" + station.getName() + "\n";
+        for(String station: listOfStations){
+            stationList += "\u2022" + station + "\n";
         }
         routeInfo.setText(stationList);
     }

@@ -325,9 +325,11 @@ public class MapEditController {
         String stationName = (String)workspace.getStationNameBox().getValue();
         if(data.searchStation(stationName)){
             DraggableStation stationToRemove = (DraggableStation)data.getSelectedNode();
-            ArrayList<DraggableLine> list = stationToRemove.getListOfLines();
-            for(DraggableLine line: list)
-                line.getListOfStations().remove(stationToRemove);
+            ArrayList<String> list = stationToRemove.getListOfLines();
+            for(String line: list){
+                data.searchLine(line);
+                ((DraggableLine)data.getSelectedNode()).getListOfStations().remove(stationToRemove.getName());
+            } //endFor
             data.removeNode(stationToRemove.getNameLabel());
             data.removeSelectedNode();  
             workspace.getStationNameBox().getItems().remove(stationName);

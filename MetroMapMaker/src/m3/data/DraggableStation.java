@@ -21,7 +21,7 @@ public class DraggableStation extends Ellipse implements Draggable{
     String name;
     Color stationColor;
     DraggableLabel nameLabel;
-    ArrayList<DraggableLine> listOfLines = new ArrayList<>();
+    ArrayList<String> listOfLines = new ArrayList<>();
 
     /**
      * Contrustor for initialing DraggableStation with default data.
@@ -196,8 +196,8 @@ public class DraggableStation extends Ellipse implements Draggable{
      * @param lineToAdd line to add
      */    
     public void addLine(DraggableLine lineToAdd){
-        if(lineToAdd != null)
-            listOfLines.add(lineToAdd);
+        if(lineToAdd != null && !listOfLines.contains(lineToAdd.getName()))
+            listOfLines.add(lineToAdd.getName());
     }
     
     /**
@@ -207,7 +207,7 @@ public class DraggableStation extends Ellipse implements Draggable{
      */        
     public void removeLine(DraggableLine lineToRemove){
         if(lineToRemove != null)
-            listOfLines.remove(lineToRemove);
+            listOfLines.remove(lineToRemove.getName());
     }
     
     /**
@@ -215,7 +215,7 @@ public class DraggableStation extends Ellipse implements Draggable{
      * 
      * @param listToSet list to set
      */      
-    public void setListOfLine(ArrayList<DraggableLine> listToSet){
+    public void setListOfLine(ArrayList<String> listToSet){
         listOfLines = listToSet;
     }
     
@@ -286,7 +286,7 @@ public class DraggableStation extends Ellipse implements Draggable{
      * 
      * @return listOfLines
      */        
-    public ArrayList<DraggableLine> getListOfLines(){
+    public ArrayList<String> getListOfLines(){
         return listOfLines;
     }
     

@@ -949,6 +949,11 @@ public class m3Workspace extends AppWorkspaceComponent{
      * We are not using this.
      */
     public void resetWorkspace() {
-        // WE ARE NOT USING THIS, THOUGH YOU MAY IF YOU LIKE
+        bgColorPicker.setValue(Color.WHITE);
+        updateStationColorPickerStyle(Color.WHITE);
+        updateLineEditButtonStyle(Color.WHITE);
+        lineNameBox.getItems().clear();
+        stationNameBox.getItems().clear();
+        
     }
 }

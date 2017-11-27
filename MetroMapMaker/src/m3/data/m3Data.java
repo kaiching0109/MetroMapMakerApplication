@@ -346,6 +346,7 @@ public class m3Data implements AppDataComponent {
      */
     @Override
     public void resetData() {
+        m3Workspace workspace =  (m3Workspace)app.getWorkspaceComponent();
 	setState(SELECTING_SHAPE);
 	newShape = null;
 	selectedNode = null;
@@ -354,7 +355,10 @@ public class m3Data implements AppDataComponent {
 	currentFillColor = Color.web(WHITE_HEX);
 	
 	m3Nodes.clear();
-	((m3Workspace)app.getWorkspaceComponent()).getCanvas().getChildren().clear();
+        m3Lines.clear();
+        m3Stations.clear();
+        workspace.resetWorkspace();
+	workspace.getCanvas().getChildren().clear();
     }
 
     /**
@@ -398,16 +402,21 @@ public class m3Data implements AppDataComponent {
      * @param x  x is the x coordinate of the clicked position of the cursor.
      * @param y  y is the y coordinate of the clicked position of the cursor.
      */
-    public void startNewLine(int x, int y) {
-        m3Workspace workspace = (m3Workspace)app.getWorkspaceComponent();
+    public void startNewLine(int x, int y) { 
 	DraggableLine newLine = new DraggableLine();
         String lineName = InfoRequireDialogSingleton.getSingleton().getName();
 	newLine.start(x, y); 
         newLine.getPoints().setAll(new Double[]{(double)x, (double)y}); 
         newLine.setColor(InfoRequireDialogSingleton.getSingleton().getColorPicker().getValue());
         newLine.setName(lineName);
-        workspace.getLineNameBox().getItems().add(lineName);
+        setLineLabels(newLine);
+        updateShapeComboBox(lineName, newLine.getNodeType());
 	newShape = newLine;
+	initNewShape();
+    }
+    
+    public void setLineLabels(DraggableLine newLine){
+        m3Workspace workspace = (m3Workspace)app.getWorkspaceComponent();
         DraggableLabel label1 = newLine.getLineLabel1();
         DraggableLabel label2 = newLine.getLineLabel2();
         label1.setOnMouseClicked(e->{
@@ -418,8 +427,6 @@ public class m3Data implements AppDataComponent {
         });
         m3Nodes.add(label1);
         m3Nodes.add(label2);
-        //setState(SIZING_LINE);
-	initNewShape();
     }
 
     /**
@@ -429,21 +436,43 @@ public class m3Data implements AppDataComponent {
      * @param y  y is the y coordinate of the clicked position of the cursor.
      */    
     public void startNewStation(int x, int y) {
-        m3Workspace workspace = (m3Workspace)app.getWorkspaceComponent();
 	DraggableStation newStation = new DraggableStation();
 	newStation.start(x, y);
         String stationName = InfoRequireDialogSingleton.getSingleton().getName();
         newStation.setName(stationName);
         newStation.setColor(InfoRequireDialogSingleton.getSingleton().getColorPicker().getValue());
+        newStation.setStroke(STROKE_COLOR);
+        
+        /*
         workspace.getStationNameBox().getItems().add(stationName);
         DraggableLabel nameLabel = newStation.getNameLabel();
         nameLabel.setOnMouseClicked(e->{
             workspace.loadSelectedNodeSettings(newStation);
         });        
         addNode(newStation.getNameLabel());
-        newStation.setStroke(STROKE_COLOR);
+        */
+        setStationLabel(newStation);
+        updateShapeComboBox(stationName, newStation.getNodeType());
 	newShape = newStation;
 	initNewShape();
+    }
+    
+    public void setStationLabel(DraggableStation station){
+        m3Workspace workspace = (m3Workspace)app.getWorkspaceComponent();
+        DraggableLabel nameLabel = station.getNameLabel();
+        nameLabel.setOnMouseClicked(e->{
+            workspace.loadSelectedNodeSettings(station);
+        });        
+        addNode(station.getNameLabel());        
+    }
+    
+    public void updateShapeComboBox(String name, String type){
+        m3Workspace workspace = (m3Workspace)app.getWorkspaceComponent();
+        if(type.equals(LINE)){
+            workspace.getLineNameBox().getItems().add(name);
+        } else if (type.equals(STATION)){
+            workspace.getStationNameBox().getItems().add(name);
+        }
     }
     
     /**
@@ -608,7 +637,7 @@ public class m3Data implements AppDataComponent {
             DraggableLine selectedLine = (DraggableLine)selectedNode;
             System.out.println("START");
             if(selectedLine.contains(x, y)){   
-                selectedLine.addStation(stationToAdd);
+                selectedLine.addStation(stationToAdd.getName());
                 stationToAdd.centerXProperty().set(x);
                 stationToAdd.centerYProperty().set(y);
                 stationToAdd.addLine(selectedLine);
@@ -618,39 +647,43 @@ public class m3Data implements AppDataComponent {
     
     public void removeStationFromLine(DraggableStation stationToRemove){
         m3Workspace workspace = (m3Workspace)app.getWorkspaceComponent();
-        if(searchLine((String)workspace.getLineNameBox().getValue())){
+        String name = (String)workspace.getLineNameBox().getValue();
+        if(searchLine(name)){
             DraggableLine selectedLine = (DraggableLine)selectedNode;
-            ArrayList<DraggableStation> list = selectedLine.getListOfStations();
-            if(list.contains(stationToRemove)){
-                list.remove(stationToRemove);
+            ArrayList<String> list = selectedLine.getListOfStations();
+            if(list.contains(name)){
+                list.remove(name);
                 stationToRemove.removeLine(selectedLine);
             }    
         } //endIf
     }
     
     private void sortStations(DraggableLine line){
-        HashMap<DraggableStation, Integer> hashMap = new HashMap<DraggableStation, Integer>();
-        ArrayList<DraggableStation> listOfStations = line.getListOfStations();
+        HashMap<String, Integer> hashMap = new HashMap<String, Integer>();
+        ArrayList<String> listOfStations = line.getListOfStations();
         for(int i = 0; i < listOfStations.size(); i++){
-            DraggableStation station = listOfStations.get(i);
+            String station = listOfStations.get(i);
+            searchStation(station);
+            DraggableStation selectedStation = (DraggableStation)selectedNode;
             double lineX = line.getPoints().get(0);
             double lineY = line.getPoints().get(1);
-            double distance = line.getDistance(lineX, lineY, station.getCenterX(), station.getCenterY());
+            
+            double distance = line.getDistance(lineX, lineY, selectedStation.getCenterX(), selectedStation.getCenterY());
             hashMap.put(listOfStations.get(i), (int)distance);
         }
         
-        Set<Entry<DraggableStation,Integer>> mapEntries = hashMap.entrySet();
-        List<Entry<DraggableStation,Integer>> list = new LinkedList<Entry<DraggableStation,Integer>>(mapEntries);
-        Collections.sort(list, new Comparator<Entry<DraggableStation,Integer>>() {
+        Set<Entry<String,Integer>> mapEntries = hashMap.entrySet();
+        List<Entry<String,Integer>> list = new LinkedList<Entry<String,Integer>>(mapEntries);
+        Collections.sort(list, new Comparator<Entry<String,Integer>>() {
 
             @Override
-            public int compare(Entry<DraggableStation, Integer> ele1, Entry<DraggableStation, Integer> ele2) {
+            public int compare(Entry<String, Integer> ele1, Entry<String, Integer> ele2) {
                return ele1.getValue().compareTo(ele2.getValue());
             }
         }); 
         
         for(int i = 0; i < list.size(); i++){
-            DraggableStation station = list.get(i).getKey();
+            String station = list.get(i).getKey();
             listOfStations.set(i, station);
         } //endFor
     }    

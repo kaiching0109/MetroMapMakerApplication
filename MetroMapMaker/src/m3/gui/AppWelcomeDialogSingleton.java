@@ -8,6 +8,7 @@ package m3.gui;
 import djf.AppTemplate;
 import djf.components.AppDataComponent;
 import static djf.settings.AppPropertyType.APP_ICON;
+import static djf.settings.AppPropertyType.LOAD_WORK_TITLE;
 import static djf.settings.AppPropertyType.PREF_HEIGHT;
 import static djf.settings.AppPropertyType.PREF_WIDTH;
 import static djf.settings.AppStartupConstants.CLOSE_BUTTON_LABEL;
@@ -38,6 +39,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
+import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import m3.data.m3Data;
@@ -118,16 +120,26 @@ public class AppWelcomeDialogSingleton extends Stage {
             dialog.setTitle("Create New Metro Map");
             dialog.setContentText("Please enter the name of the map:");
             boolean successful = false;
-            String result;
-            while (!successful) {
-                dialog.showAndWait();
-                String path = PATH_WORK + dialog.getResult();
-                File dir = new File(path);
-                successful = dir.mkdirs();
-                //save
+            int i = 0;
+            dialog.showAndWait();
+            String path = PATH_WORK + dialog.getResult();
+            String title = dialog.getResult();
+            File file = new File(path);
+            while (!file.mkdir()) {
+                i++;
+                path = PATH_WORK + dialog.getResult() + i;
+                title = dialog.getResult() + i;
+                file = new File(path);
             }
             app.getGUI().getFileController().handleNewRequest();
-            primaryStage.setTitle(dialog.getResult());
+            try {
+                app.getGUI().getFileController().saveWork(file);
+            } catch (IOException ex) {
+                System.err.print("HOLY");
+            }
+            	PropertiesManager props = PropertiesManager.getPropertiesManager();	
+            // AND NOW ASK THE USER FOR THE FILE TO OPEN
+            primaryStage.setTitle(title);
             close();
         });
 

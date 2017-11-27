@@ -28,7 +28,7 @@ public class DraggableLine extends Polyline implements Draggable{
     Color color;
     DraggableLabel lineLabel1;
     DraggableLabel lineLabel2;
-    ArrayList<DraggableStation> listOfStations = new ArrayList<>();
+    ArrayList<String> listOfStations = new ArrayList<>();
 
     /**
      * Contrustor for initialing DraggableLine with default data.
@@ -103,6 +103,7 @@ public class DraggableLine extends Polyline implements Draggable{
     public void setBindingHeadEnd(){
         final ObservableList<Double> points = getPoints(); 
         int size = points.size();
+        /*
         DoubleProperty startXProperty = new SimpleDoubleProperty(points.get(0));
         DoubleProperty startYProperty = new SimpleDoubleProperty(points.get(1));
         DoubleProperty endXProperty = new SimpleDoubleProperty(points.get(size - 2));
@@ -110,8 +111,33 @@ public class DraggableLine extends Polyline implements Draggable{
         startXProperty.bind(lineLabel1.xProperty());
         startYProperty.bind(lineLabel1.yProperty());
         endXProperty.bind(lineLabel2.xProperty());
-        endYProperty.bind(lineLabel2.yProperty());        
-        
+        endYProperty.bind(lineLabel2.yProperty()); 
+        */
+        lineLabel1.xProperty().addListener(new ChangeListener<Number>() {
+            @Override
+            public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
+                points.set(0, (double) newValue);
+            }
+        });
+        lineLabel1.yProperty().addListener(new ChangeListener<Number>() {
+            @Override
+            public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
+                points.set(1, (double) newValue);
+            }
+        });
+        lineLabel2.xProperty().addListener(new ChangeListener<Number>() {
+            @Override
+            public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
+                points.set(size - 2, (double) newValue);
+            }
+        });
+        lineLabel2.yProperty().addListener(new ChangeListener<Number>() {
+            @Override
+            public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
+                points.set(size - 1, (double) newValue);
+            }
+        });
+        /*
             startXProperty.addListener(new ChangeListener<Number>() {
                    @Override public void changed(ObservableValue<? extends Number> ov, Number oldX, Number x) {
                      points.set(0, (double) x);
@@ -132,7 +158,7 @@ public class DraggableLine extends Polyline implements Draggable{
                 points.set(size - 1, (double) y);
               }
             });   
-        
+        */
     }
     
     /**
@@ -211,7 +237,7 @@ public class DraggableLine extends Polyline implements Draggable{
      * 
      * @param initList the list of stations to set.
      */
-    public void setListOfStations(ArrayList<DraggableStation> initList){
+    public void setListOfStations(ArrayList<String> initList){
         listOfStations = initList;
         //NEED TO CLONE BEFORE THIS
     }
@@ -221,7 +247,7 @@ public class DraggableLine extends Polyline implements Draggable{
      * 
      * @return listOfStations the list of stations on this line.
      */    
-    public ArrayList<DraggableStation> getListOfStations(){
+    public ArrayList<String> getListOfStations(){
         return listOfStations;
     }
 
@@ -288,8 +314,9 @@ public class DraggableLine extends Polyline implements Draggable{
      * 
      * @param newStation station to add
      */      
-    public void addStation(DraggableStation newStation){
-        listOfStations.add(newStation);
+    public void addStation(String newStation){
+        if(!listOfStations.contains(newStation))
+            listOfStations.add(newStation);
     }
    
     /**
@@ -297,7 +324,7 @@ public class DraggableLine extends Polyline implements Draggable{
      * 
      * @param removeStation station to remove
      */     
-    public void removeStation(DraggableStation removeStation){
+    public void removeStation(String removeStation){
         listOfStations.remove(removeStation);
     }
    

@@ -27,6 +27,7 @@ import static djf.settings.AppPropertyType.SAVE_ERROR_TITLE;
 import static djf.settings.AppPropertyType.SAVE_UNSAVED_WORK_MESSAGE;
 import static djf.settings.AppPropertyType.SAVE_UNSAVED_WORK_TITLE;
 import static djf.settings.AppPropertyType.SAVE_WORK_TITLE;
+import static djf.settings.AppStartupConstants.DEFAULT_FILENAME;
 import static djf.settings.AppStartupConstants.PATH_WORK;
 
 /**
@@ -102,7 +103,7 @@ public class AppFileController {
 
 		// MAKE SURE THE WORKSPACE IS ACTIVATED
 		app.getWorkspaceComponent().activateWorkspace(app.getGUI().getAppPane());
-		
+
 		// WORK IS NOT SAVED
                 saved = false;
 		currentWorkFile = null;
@@ -119,7 +120,7 @@ public class AppFileController {
 	    dialog.show(props.getProperty(NEW_ERROR_TITLE), props.getProperty(NEW_ERROR_MESSAGE));
         }
     }
-
+    
     /**
      * This method lets the user open a Course saved to a file. It will also
      * make sure data for the current Course is not lost.
@@ -166,13 +167,13 @@ public class AppFileController {
 	    // OTHERWISE WE NEED TO PROMPT THE USER
 	    else {
 		// PROMPT THE USER FOR A FILE NAME
-		FileChooser fc = new FileChooser();
+		FileChooser fc = new FileChooser();       
 		fc.setInitialDirectory(new File(PATH_WORK));
 		fc.setTitle(props.getProperty(SAVE_WORK_TITLE));
 		fc.getExtensionFilters().addAll(
 		new ExtensionFilter(props.getProperty(WORK_FILE_EXT_DESC), props.getProperty(WORK_FILE_EXT)));
-
-		File selectedFile = fc.showSaveDialog(app.getGUI().getWindow());
+                fc.setInitialFileName(DEFAULT_FILENAME);                
+		File selectedFile = fc.showSaveDialog(app.getGUI().getWindow());    
 		if (selectedFile != null) {
 		    saveWork(selectedFile);
 		}
@@ -206,8 +207,9 @@ public class AppFileController {
     }   
     
     // HELPER METHOD FOR SAVING WORK
-    private void saveWork(File selectedFile) throws IOException {
+    public void saveWork(File selectedFile) throws IOException {
 	// SAVE IT TO A FILE
+        System.out.println(selectedFile.getPath());
 	app.getFileComponent().saveData(app.getDataComponent(), selectedFile.getPath());
 	
 	// MARK IT AS SAVED
