@@ -62,6 +62,8 @@ public class m3Data implements AppDataComponent {
     ArrayList<DraggableLine> m3Lines = new ArrayList<>();
     ArrayList<DraggableStation> m3Stations = new ArrayList<>();
     
+    String mapName;
+    
     // GRAPH
     Graph nodes;
     
@@ -162,7 +164,15 @@ public class m3Data implements AppDataComponent {
     public Color getBackgroundColor() {
 	return backgroundColor;
     }
-
+    
+    public void setMapName(String initMapName){
+        mapName = initMapName;
+    }
+    
+    public String getMapName(){
+        return mapName;
+    }
+    
     /**
      * The accessor method for setting the collection of m3Nodes.
      * 

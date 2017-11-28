@@ -2,6 +2,7 @@ package m3.file;
 
 import djf.components.AppDataComponent;
 import djf.components.AppFileComponent;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -9,14 +10,18 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import javafx.collections.ObservableList;
+import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.Node;
+import javafx.scene.SnapshotParameters;
+import javafx.scene.image.WritableImage;
+import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Shape;
+import javax.imageio.ImageIO;
 import javax.json.Json;
 import javax.json.JsonArray;
 import javax.json.JsonArrayBuilder;
@@ -38,6 +43,14 @@ import m3.data.DraggableLabel;
 import m3.data.DraggableLine;
 import m3.data.DraggableStation;
 import m3.data.m3Data;
+import m3.gui.m3Workspace;
+import djf.AppTemplate;
+import static djf.settings.AppStartupConstants.DEFAULT_FILENAME;
+import static djf.settings.AppStartupConstants.PATH_WORK;
+import java.io.FileNotFoundException;
+import java.io.FileWriter;
+import java.math.BigDecimal;
+import javax.json.JsonString;
 
 public class m3Files implements AppFileComponent{
 
@@ -49,7 +62,10 @@ public class m3Files implements AppFileComponent{
  * @author ?
  * @version 1.0
  */
+    AppTemplate app;
+    
     // FOR JSON LOADING
+    static final String JSON_TITLE = "title";
     static final String JSON_BG_COLOR = "background_color";
     static final String JSON_RED = "red";
     static final String JSON_GREEN = "green";
@@ -57,9 +73,11 @@ public class m3Files implements AppFileComponent{
     static final String JSON_ALPHA = "alpha";
     static final String JSON_SHAPES = "shapes";
     static final String JSON_LINES = "lines";
+    static final String JSON_CIRCULAR = "circular";
     static final String JSON_STATIONS = "stations";
     static final String JSON_RADIUS = "radius";
     static final String JSON_LIST_OF_NAMES = "listOfNames";
+    static final String JSON_STATION_NAMES = "station_names";
     static final String JSON_LINE_POINTS = "points";
     static final String JSON_SHAPE = "shape";
     static final String JSON_TYPE = "type";
@@ -87,6 +105,11 @@ public class m3Files implements AppFileComponent{
      * @throws IOException Thrown should there be an error writing 
      * out data to the file.
      */
+    
+    public m3Files(AppTemplate initApp){
+        app = initApp;
+    }
+    
     @Override
     public void saveData(AppDataComponent data, String filePath) throws IOException {
 	// GET THE DATA
@@ -100,7 +123,8 @@ public class m3Files implements AppFileComponent{
 	JsonArrayBuilder arrayBuilder = Json.createArrayBuilder();
 	ObservableList<Node> shapes = dataManager.getM3Nodes();
         ArrayList<DraggableLine> lines = dataManager.getM3Lines();
-        ArrayList<DraggableStation> stations = dataManager.getM3Stations();
+        ArrayList<DraggableStation> stations = dataManager.getM3Stations(); 
+        String title = app.getGUI().getWindow().getTitle();
         
         // BUILD THE LINE JSON OBJECT TO SAVE
         for(DraggableLine line : lines){
@@ -110,6 +134,7 @@ public class m3Files implements AppFileComponent{
             JsonArrayBuilder listOfStationsArrayBuilder = Json.createArrayBuilder();
             String type = line.getNodeType();
             String name = line.getName();
+            Boolean circular = line.getCircular();
             ArrayList<String> listOfStations = line.getListOfStations();
             ObservableList<Double> points = line.getPoints();           
             JsonObject colorJson = makeJsonColorObject(line.getColor());
@@ -134,6 +159,7 @@ public class m3Files implements AppFileComponent{
             JsonObject lineJson = Json.createObjectBuilder()
 		    .add(JSON_TYPE, type)
                     .add(JSON_NAME, name)
+                    .add(JSON_CIRCULAR, circular)
                     .add(JSON_LINE_POINTS, pointsArray)
                     .add(JSON_LIST_OF_NAMES, listOfStationsArray)
 		    .add(JSON_COLOR, colorJson)
@@ -173,10 +199,8 @@ public class m3Files implements AppFileComponent{
 		    .add(JSON_OUTLINE_THICKNESS, outlineThickness).build();
 	    arrayBuilder.add(stationJson);   
         }        
-        
-        
+             
 	JsonArray shapesArray = arrayBuilder.build();        
-       
         /*
 	for (Node node : shapes) {
 	    Shape shape = (Shape)node;
@@ -208,6 +232,7 @@ public class m3Files implements AppFileComponent{
 	// THEN PUT IT ALL TOGETHER IN A JsonObject
 	JsonObject dataManagerJSO = Json.createObjectBuilder()
 		//.add(JSON_BG_COLOR, bgColorJson)
+                .add(JSON_TITLE, title)
 		.add(JSON_SHAPES, shapesArray)
 		.build();
 	
@@ -223,11 +248,11 @@ public class m3Files implements AppFileComponent{
 	jsonWriter.close();
 
 	// INIT THE WRITER
-	OutputStream os = new FileOutputStream(filePath + ".json");
+	OutputStream os = new FileOutputStream(filePath+"m3");
 	JsonWriter jsonFileWriter = Json.createWriter(os);
 	jsonFileWriter.writeObject(dataManagerJSO);
 	String prettyPrinted = sw.toString();
-	PrintWriter pw = new PrintWriter(filePath);
+	PrintWriter pw = new PrintWriter(filePath+"m3");
 	pw.write(prettyPrinted);
 	pw.close();
     }
@@ -259,7 +284,6 @@ public class m3Files implements AppFileComponent{
 	// CLEAR THE OLD DATA OUT
 	m3Data dataManager = (m3Data)data;
 	dataManager.resetData();
-	
 	// LOAD THE JSON FILE WITH ALL THE DATA
 	JsonObject json = loadJSONFile(filePath);
 	
@@ -269,6 +293,8 @@ public class m3Files implements AppFileComponent{
 
 	// AND NOW LOAD ALL THE SHAPES
 	JsonArray jsonShapeArray = json.getJsonArray(JSON_SHAPES);
+        String jsonTitle = json.getJsonString(JSON_TITLE).getString();
+        app.getGUI().getWindow().setTitle(jsonTitle);
         
 	for (int i = 0; i < jsonShapeArray.size(); i++) {
 	    JsonObject jsonShape = jsonShapeArray.getJsonObject(i);
@@ -318,6 +344,7 @@ public class m3Files implements AppFileComponent{
 	if (type.equals(LINE)) {
 	    DraggableLine line = new DraggableLine();
             String lineName = jsonShape.getString(JSON_NAME);
+            Boolean circular = jsonShape.getBoolean(JSON_CIRCULAR);
             JsonArray jsonPointsArray = jsonShape.getJsonArray(JSON_LINE_POINTS);
             loadPointsList(jsonPointsArray, line);
             JsonArray jsonStationArray = jsonShape.getJsonArray(JSON_LIST_OF_NAMES);
@@ -327,6 +354,7 @@ public class m3Files implements AppFileComponent{
             
             //SET LINE
             line.setName(lineName);
+            line.setCircular(circular);
             line.setListOfStations(listOfStations);
             line.setColor(color);
             line.setStrokeWidth(outlineThickness);
@@ -424,10 +452,92 @@ public class m3Files implements AppFileComponent{
      * to save the data to.
      */
     @Override
-    public void exportData(AppDataComponent data, String filePath) throws IOException {
-        // WE ARE NOT USING THIS, THOUGH PERHAPS WE COULD FOR EXPORTING
-        // IMAGES TO VARIOUS FORMATS, SOMETHING OUT OF THE SCOPE
-        // OF THIS ASSIGNMENT
+    public void exportData(AppDataComponent data, String filePath) throws FileNotFoundException{
+	m3Workspace workspace = (m3Workspace)app.getWorkspaceComponent();
+	Pane canvas = workspace.getCanvas();
+	WritableImage image = canvas.snapshot(new SnapshotParameters(), null);
+        String fileName = ((m3Data)app.getDataComponent()).getMapName();
+	File file = new File((PATH_WORK + fileName + "/" + fileName + "" + " Metro.png"));
+	try {
+	    ImageIO.write(SwingFXUtils.fromFXImage(image, null), "png", file);
+	}
+	catch(IOException ioe) {
+	    ioe.printStackTrace();
+	}
+        // GET THE DATA
+	m3Data dataManager = (m3Data)data;
+
+	// NOW BUILD THE JSON OBJECTS TO SAVE
+	//JsonArrayBuilder mapArrayBuilder = Json.createArrayBuilder();
+        JsonArrayBuilder lineArrayBuilder = Json.createArrayBuilder();
+        JsonArrayBuilder stationArrayBuilder = Json.createArrayBuilder();
+        
+        ArrayList<DraggableLine> lines = dataManager.getM3Lines();
+        ArrayList<DraggableStation> stations = dataManager.getM3Stations(); 
+        String title = app.getGUI().getWindow().getTitle();
+        
+        // BUILD THE LINE JSON OBJECT TO SAVE
+        for(DraggableLine line : lines){
+            String lineName = line.getName();
+            Boolean circular = line.getCircular();
+            JsonObject colorJson = makeJsonColorObject(line.getColor());
+            ArrayList<String>listOfStations = line.getListOfStations();
+            JsonArrayBuilder listOfStationsArrayBuilder = Json.createArrayBuilder();
+
+            //Get the list of Stations
+	    for(String station : listOfStations) 
+                listOfStationsArrayBuilder.add(station);   
+            JsonArray listOfStationsArray = listOfStationsArrayBuilder.build();
+            JsonObject lineJson = Json.createObjectBuilder()
+                    .add(JSON_NAME, lineName)
+                    .add(JSON_CIRCULAR, circular)
+                    .add(JSON_COLOR, colorJson)
+                    .add(JSON_STATION_NAMES, listOfStationsArray).build();
+	    lineArrayBuilder.add(lineJson); 
+        } //LINES
+        JsonArray linesArray = lineArrayBuilder.build();
+        //mapArrayBuilder.add(lineArrayBuilder);
+        
+        for(DraggableStation station : stations){
+            String stationName = station.getName();
+            double x = station.getCenterX();
+            double y = station.getCenterY();
+
+            JsonObject stationJson = Json.createObjectBuilder()
+                    .add(JSON_NAME, stationName)
+                    .add(JSON_X, x)
+                    .add(JSON_Y, y).build();
+	    stationArrayBuilder.add(stationJson); 
+        }    
+        JsonArray stationsArray = stationArrayBuilder.build();
+        
+        //mapArrayBuilder.add(stationArrayBuilder);
+        JsonObject dataManagerJSO = Json.createObjectBuilder()
+                .add(JSON_NAME, title)
+                .add(JSON_LINES, linesArray)
+                .add(JSON_STATIONS, stationsArray).build();
+        
+	
+	// AND NOW OUTPUT IT TO A JSON FILE WITH PRETTY PRINTING
+	Map<String, Object> properties = new HashMap<>(1);
+	properties.put(JsonGenerator.PRETTY_PRINTING, true);
+	JsonWriterFactory writerFactory = Json.createWriterFactory(properties);
+	StringWriter sw = new StringWriter();
+        // SET THE TITLE
+        //jsonWriter.writeObject();
+        try (JsonWriter jsonWriter = writerFactory.createWriter(sw)) {
+            // SET THE TITLE
+            //jsonWriter.writeObject();
+            jsonWriter.writeObject(dataManagerJSO);
+        }
+	// INIT THE WRITER
+	OutputStream os = new FileOutputStream((PATH_WORK + fileName + "/" + fileName + "" + " Metro.json"));
+	JsonWriter jsonFileWriter = Json.createWriter(os);
+	jsonFileWriter.writeObject(dataManagerJSO);
+	String prettyPrinted = sw.toString();
+	PrintWriter pw = new PrintWriter((PATH_WORK + fileName + "/" + fileName + "" + " Metro.json"));
+	pw.write(prettyPrinted);
+	pw.close();
     }
     
     /**

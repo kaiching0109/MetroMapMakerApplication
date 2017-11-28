@@ -50,6 +50,7 @@ import static djf.settings.AppPropertyType.ZOOMIN_TOOLTIP;
 import static djf.settings.AppPropertyType.ZOOMOUT_ICON;
 import static djf.settings.AppPropertyType.ZOOMOUT_TOOLTIP;
 import java.io.IOException;
+import javafx.application.Platform;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
@@ -597,7 +598,7 @@ public class m3Workspace extends AppWorkspaceComponent{
     // HELPER SETUP METHOD
     private void initControllers() {
         //MAKE THE TOPTOOLBAR CONTROLLER
-        FileController = new m3Files();
+        FileController = new m3Files(app);
         //GET THE SCENE AND STAGE
         Scene scene = gui.getPrimaryScene();
         Stage stage = gui.getWindow();
@@ -816,7 +817,7 @@ public class m3Workspace extends AppWorkspaceComponent{
                 lineEditDialog.setLine(line);  
                 updateLineEditButtonStyle(line.getColor());               
  
-            } else if(node instanceof DraggableStation){  
+            } else if(node instanceof DraggableStation){                
                 DraggableStation station = (DraggableStation)node;
                 stationRadiusSlider.setValue(station.getRadius());
                 stationNameBox.setValue(station.getName());

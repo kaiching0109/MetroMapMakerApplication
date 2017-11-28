@@ -35,6 +35,7 @@ import static djf.settings.AppStartupConstants.FILE_PROTOCOL;
 import static djf.settings.AppStartupConstants.PATH_IMAGES;
 import djf.ui.AppMessageDialogSingleton;
 import java.util.ArrayList;
+import javafx.application.Platform;
 import javafx.scene.Node;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
@@ -133,41 +134,43 @@ public class MapEditController {
      * the selected line through lineComboBox.
      */
      public void processLineEditting(){
-        m3Workspace workspace = (m3Workspace)app.getWorkspaceComponent();
-        ComboBox lineNameBox = workspace.getLineNameBox();
-        LineEditDialogSingleton lineEditDialog = LineEditDialogSingleton.getSingleton();
-        lineEditDialog.show("Metro Map Maker - Metro Line Stops", "");  
-        
-        //Get the selected Line from data class.
-        dataManager.searchLine((String)lineNameBox.getValue());
-        DraggableLine selectedLine = (DraggableLine)dataManager.getSelectedNode();
-        String selectedLineName = selectedLine.getName();
-        
-        //Get the color and name that might be changed.
-        Color editedColor = lineEditDialog.getLineColorPicker().getValue();
-        String editedName = lineEditDialog.getLineName();
-        
-        //Set new color
-        selectedLine.setColor(editedColor);
-        
-        //Check if name has modified
-        if(!selectedLineName.equals(editedName)){
-            
-            //Check if new name existed and replace the name if it doesn't
-            if(!dataManager.searchLine(editedName)){
-                selectedLine.setName(editedName);
-                int index = lineNameBox.getItems().indexOf(selectedLineName);
-                lineNameBox.getItems().set(index, editedName);
-                //lineNameBox.getSelectionModel().select(index);
+         Platform.runLater(() -> {
+            m3Workspace workspace = (m3Workspace)app.getWorkspaceComponent();
+            ComboBox lineNameBox = workspace.getLineNameBox();
+            LineEditDialogSingleton lineEditDialog = LineEditDialogSingleton.getSingleton();
+            lineEditDialog.show("Metro Map Maker - Metro Line Stops", "");  
+
+            //Get the selected Line from data class.
+            dataManager.searchLine((String)lineNameBox.getValue());
+            DraggableLine selectedLine = (DraggableLine)dataManager.getSelectedNode();
+            String selectedLineName = selectedLine.getName();
+
+            //Get the color and name that might be changed.
+            Color editedColor = lineEditDialog.getLineColorPicker().getValue();
+            String editedName = lineEditDialog.getLineName();
+
+            //Set new color
+            selectedLine.setColor(editedColor);
+
+            //Check if name has modified
+            if(!selectedLineName.equals(editedName)){
+
+                //Check if new name existed and replace the name if it doesn't
+                if(!dataManager.searchLine(editedName)){
+                    selectedLine.setName(editedName);
+                    int index = lineNameBox.getItems().indexOf(selectedLineName);
+                    lineNameBox.getItems().set(index, editedName);
+                    //lineNameBox.getSelectionModel().select(index);
+                } //endIf
+                else{
+                    PropertiesManager props = PropertiesManager.getPropertiesManager();    
+                    AppMessageDialogSingleton dialog = AppMessageDialogSingleton.getSingleton();
+                    dialog.show(props.getProperty(LINE_EXISTED_ERROR_TITLE), props.getProperty(LINE_EXISTED_ERROR_MESSAGE));                  
+                } //endElse       
             } //endIf
-            else{
-                PropertiesManager props = PropertiesManager.getPropertiesManager();    
-                AppMessageDialogSingleton dialog = AppMessageDialogSingleton.getSingleton();
-                dialog.show(props.getProperty(LINE_EXISTED_ERROR_TITLE), props.getProperty(LINE_EXISTED_ERROR_MESSAGE));                  
-            } //endElse       
-        } //endIf
-        workspace.loadSelectedNodeSettings(selectedLine);
-     }
+            workspace.loadSelectedNodeSettings(selectedLine);
+        });
+     }     
     
     /**
      * This method processes a user request to start drawing a line.
@@ -249,16 +252,18 @@ public class MapEditController {
      * for line drawing / the selected line through thicknessSlider.
      */
     public void processSelectLineThickness() {
-        m3Workspace workspace = (m3Workspace)app.getWorkspaceComponent();
-        m3Data data = (m3Data)app.getDataComponent();
-        int lineThickness = (int)workspace.getLineThicknessSlider().getValue();  
-        String lineName = (String)workspace.getLineNameBox().getValue(); 
-        if(data.searchLine(lineName)){   
-            DraggableLine selectLine = (DraggableLine)data.getSelectedNode();
-            selectLine.setStrokeWidth(lineThickness);
-        } 
-        app.getGUI().updateToolbarControls(false);
-        workspace.reloadWorkspace(dataManager);
+        Platform.runLater(() -> {
+            m3Workspace workspace = (m3Workspace)app.getWorkspaceComponent();
+            m3Data data = (m3Data)app.getDataComponent();
+            int lineThickness = (int)workspace.getLineThicknessSlider().getValue();  
+            String lineName = (String)workspace.getLineNameBox().getValue(); 
+            if(data.searchLine(lineName)){   
+                DraggableLine selectLine = (DraggableLine)data.getSelectedNode();
+                selectLine.setStrokeWidth(lineThickness);
+            } 
+            app.getGUI().updateToolbarControls(false);
+            workspace.reloadWorkspace(dataManager);
+        });
     }  
     
     /**
@@ -368,16 +373,18 @@ public class MapEditController {
      * This method allows user to modify the radius of the selected station.
      */
     public void processSelectedStationRadius(){
-       m3Workspace workspace = (m3Workspace)app.getWorkspaceComponent();
-        m3Data data = (m3Data)app.getDataComponent();
-        int radius = (int)workspace.getStationRadiusSlider().getValue();  
-        String stationName = (String)workspace.getStationNameBox().getValue(); 
-        if(data.searchStation(stationName)){   
-            DraggableStation selectStation = (DraggableStation)data.getSelectedNode();
-            selectStation.setRadius(radius);
-        } 
-        app.getGUI().updateToolbarControls(false);
-        workspace.reloadWorkspace(dataManager);        
+        Platform.runLater(() -> {
+            m3Workspace workspace = (m3Workspace)app.getWorkspaceComponent();
+            m3Data data = (m3Data)app.getDataComponent();
+            int radius = (int)workspace.getStationRadiusSlider().getValue();  
+            String stationName = (String)workspace.getStationNameBox().getValue(); 
+            if(data.searchStation(stationName)){   
+                DraggableStation selectStation = (DraggableStation)data.getSelectedNode();
+                selectStation.setRadius(radius);
+            } 
+            app.getGUI().updateToolbarControls(false);
+            workspace.reloadWorkspace(dataManager);     
+        });    
     }
     
     /**

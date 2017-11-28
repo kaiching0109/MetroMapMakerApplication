@@ -116,28 +116,24 @@ public class AppWelcomeDialogSingleton extends Stage {
         // SET CREATENEWLINK BUTTON
         createNewLink = new Hyperlink("Create New Metro Map");
         createNewLink.setOnAction(e -> {
-            TextInputDialog dialog = new TextInputDialog("Metro Map Maker - ");
+            TextInputDialog dialog = new TextInputDialog();
             dialog.setTitle("Create New Metro Map");
             dialog.setContentText("Please enter the name of the map:");
             boolean successful = false;
             int i = 0;
             dialog.showAndWait();
             String path = PATH_WORK + dialog.getResult();
-            String title = dialog.getResult();
+            String title = "Metro Map Maker - " +dialog.getResult();
+            ((m3Data)app.getDataComponent()).setMapName(dialog.getResult());
             File file = new File(path);
             while (!file.mkdir()) {
                 i++;
-                path = PATH_WORK + dialog.getResult() + i;
-                title = dialog.getResult() + i;
+                path = PATH_WORK  + dialog.getResult() + i;
+                title = "Metro Map Maker - " + dialog.getResult() + i;
                 file = new File(path);
             }
             app.getGUI().getFileController().handleNewRequest();
-            try {
-                app.getGUI().getFileController().saveWork(file);
-            } catch (IOException ex) {
-                System.err.print("HOLY");
-            }
-            	PropertiesManager props = PropertiesManager.getPropertiesManager();	
+            PropertiesManager props = PropertiesManager.getPropertiesManager();	
             // AND NOW ASK THE USER FOR THE FILE TO OPEN
             primaryStage.setTitle(title);
             close();
@@ -186,6 +182,8 @@ public class AppWelcomeDialogSingleton extends Stage {
             Hyperlink recentWorkLink = new Hyperlink(file.getName());
             recentWorkLink.setOnAction(e -> {
                 selection = filePath;
+                int size = file.getName().length();
+                ((m3Data)app.getDataComponent()).setMapName(file.getName().substring(0, size-5));
                 close();
             });
             recentWorkBar.getChildren().add(recentWorkLink);
@@ -231,7 +229,7 @@ public class AppWelcomeDialogSingleton extends Stage {
     }
 
     private Boolean checkType(File dir, String name) {
-        if (name.endsWith(".json")) {
+        if (name.endsWith(".m3")) {
             return true;
         } else {
             return false;

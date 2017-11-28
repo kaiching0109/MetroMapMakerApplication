@@ -16,7 +16,10 @@ import djf.AppTemplate;
 import static djf.settings.AppPropertyType.*;
 import static djf.settings.AppStartupConstants.FILE_PROTOCOL;
 import static djf.settings.AppStartupConstants.PATH_IMAGES;
+import java.io.IOException;
 import java.net.URL;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.control.Tooltip;
 
@@ -228,7 +231,11 @@ public class AppGUI {
             fileController.handleSaveAsRequest();
         });	
         exportButton.setOnAction(e -> {
-            fileController.handleExportRequest();
+            try {
+                fileController.handleExportRequest();
+            } catch (IOException ex) {
+                Logger.getLogger(AppGUI.class.getName()).log(Level.SEVERE, null, ex);
+            }
         });	        
         
         // NOW PUT THE FILE TOOLBAR IN THE TOP TOOLBAR, WHICH COULD

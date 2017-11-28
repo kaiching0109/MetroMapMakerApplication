@@ -171,8 +171,7 @@ public class AppFileController {
 		fc.setInitialDirectory(new File(PATH_WORK));
 		fc.setTitle(props.getProperty(SAVE_WORK_TITLE));
 		fc.getExtensionFilters().addAll(
-		new ExtensionFilter(props.getProperty(WORK_FILE_EXT_DESC), props.getProperty(WORK_FILE_EXT)));
-                fc.setInitialFileName(DEFAULT_FILENAME);                
+		new ExtensionFilter(props.getProperty(WORK_FILE_EXT_DESC), props.getProperty(WORK_FILE_EXT)));                
 		File selectedFile = fc.showSaveDialog(app.getGUI().getWindow());    
 		if (selectedFile != null) {
 		    saveWork(selectedFile);
@@ -203,13 +202,13 @@ public class AppFileController {
      * 
      * @param courseToSave The course being edited that is to be saved to a file.
      */   
-    public void handleExportRequest() {
+    public void handleExportRequest() throws IOException{
+            app.getFileComponent().exportData(app.getDataComponent(), PATH_WORK);
     }   
     
     // HELPER METHOD FOR SAVING WORK
     public void saveWork(File selectedFile) throws IOException {
 	// SAVE IT TO A FILE
-        System.out.println(selectedFile.getPath());
 	app.getFileComponent().saveData(app.getDataComponent(), selectedFile.getPath());
 	
 	// MARK IT AS SAVED
@@ -348,7 +347,7 @@ public class AppFileController {
                 
                 // AND MAKE SURE THE FILE BUTTONS ARE PROPERLY ENABLED
                 saved = true;
-                app.getGUI().updateToolbarControls(saved);
+                app.getGUI().updateToolbarControls(saved); 
             } catch (Exception e) {
                 AppMessageDialogSingleton dialog = AppMessageDialogSingleton.getSingleton();
                 dialog.show(props.getProperty(LOAD_ERROR_TITLE), props.getProperty(LOAD_ERROR_MESSAGE));

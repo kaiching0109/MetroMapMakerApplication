@@ -29,6 +29,7 @@ public class DraggableLine extends Polyline implements Draggable{
     DraggableLabel lineLabel1;
     DraggableLabel lineLabel2;
     ArrayList<String> listOfStations = new ArrayList<>();
+    Boolean isCircular;
 
     /**
      * Contrustor for initialing DraggableLine with default data.
@@ -38,6 +39,7 @@ public class DraggableLine extends Polyline implements Draggable{
         startY= 0.0;
         endX = 0.0;
         endY = 0.0;
+        isCircular = false;
         this.setStrokeWidth(5);
         setLineLabel1();
         setLineLabel2();
@@ -103,63 +105,48 @@ public class DraggableLine extends Polyline implements Draggable{
     public void setBindingHeadEnd(){
         final ObservableList<Double> points = getPoints(); 
         int size = points.size();
-        /*
-        DoubleProperty startXProperty = new SimpleDoubleProperty(points.get(0));
-        DoubleProperty startYProperty = new SimpleDoubleProperty(points.get(1));
-        DoubleProperty endXProperty = new SimpleDoubleProperty(points.get(size - 2));
-        DoubleProperty endYProperty = new SimpleDoubleProperty(points.get(size - 1));
-        startXProperty.bind(lineLabel1.xProperty());
-        startYProperty.bind(lineLabel1.yProperty());
-        endXProperty.bind(lineLabel2.xProperty());
-        endYProperty.bind(lineLabel2.yProperty()); 
-        */
+
         lineLabel1.xProperty().addListener(new ChangeListener<Number>() {
             @Override
             public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
                 points.set(0, (double) newValue);
+                checkCollision(getPoints().get(0), getPoints().get(1), getPoints().get(size-2), getPoints().get(size-1));
             }
         });
         lineLabel1.yProperty().addListener(new ChangeListener<Number>() {
             @Override
             public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
                 points.set(1, (double) newValue);
+                checkCollision(getPoints().get(0), getPoints().get(1), getPoints().get(size-2), getPoints().get(size-1));
             }
         });
         lineLabel2.xProperty().addListener(new ChangeListener<Number>() {
             @Override
             public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
                 points.set(size - 2, (double) newValue);
+                checkCollision(getPoints().get(0), getPoints().get(1), getPoints().get(size-2), getPoints().get(size-1));
             }
         });
         lineLabel2.yProperty().addListener(new ChangeListener<Number>() {
             @Override
             public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
                 points.set(size - 1, (double) newValue);
+                checkCollision(getPoints().get(0), getPoints().get(1), getPoints().get(size-2), getPoints().get(size-1));
             }
         });
-        /*
-            startXProperty.addListener(new ChangeListener<Number>() {
-                   @Override public void changed(ObservableValue<? extends Number> ov, Number oldX, Number x) {
-                     points.set(0, (double) x);
-                   }     
-            });
-            startYProperty.addListener(new ChangeListener<Number>() {
-              @Override public void changed(ObservableValue<? extends Number> ov, Number oldY, Number y) {
-                points.set(1, (double) y);
-              }
-            });    
-            endXProperty.addListener(new ChangeListener<Number>() {
-                   @Override public void changed(ObservableValue<? extends Number> ov, Number oldX, Number x) {
-                     points.set(size - 2, (double) x);
-                   }     
-            });
-            endYProperty.addListener(new ChangeListener<Number>() {
-              @Override public void changed(ObservableValue<? extends Number> ov, Number oldY, Number y) {
-                points.set(size - 1, (double) y);
-              }
-            });   
-        */
     }
+    
+  public void checkCollision (double x1, double y1, double x2, double y2) {
+      if(getDistance(x1, y1, x2, y2) < 15){
+        final ObservableList<Double> points = getPoints(); 
+        int size = points.size();
+        points.set(size - 2, points.get(0));
+        points.set(size - 1, points.get(1));
+        System.out.println("isCircular!");
+        isCircular = true;
+      } else
+          isCircular = false;
+  }
     
     /**
      * The method that helps creating a turning point of this Line.
@@ -172,7 +159,8 @@ public class DraggableLine extends Polyline implements Draggable{
         endY = y;
         this.getPoints().addAll(new Double[]{endX, endY}); 
         lineLabel2.setX(endX);
-        lineLabel2.setY(endY);     
+        lineLabel2.setY(endY); 
+               checkCollision(getPoints().get(0), getPoints().get(1), x, y);
     }
 
     /**
@@ -197,6 +185,7 @@ public class DraggableLine extends Polyline implements Draggable{
         lineLabel1.setY(startY);
         lineLabel2.setX(endX);
         lineLabel2.setY(endY);
+        checkCollision(getPoints().get(0), getPoints().get(1), getPoints().get(size-2), getPoints().get(size-1));
     }
 
     /**
@@ -217,6 +206,14 @@ public class DraggableLine extends Polyline implements Draggable{
     @Override
     public double getY() {
         return (startY + endY)/2;
+    }
+    
+    public void setCircular(Boolean circular){
+        isCircular = circular;
+    }
+    
+    public boolean getCircular(){
+        return isCircular;
     }
     
     /**
