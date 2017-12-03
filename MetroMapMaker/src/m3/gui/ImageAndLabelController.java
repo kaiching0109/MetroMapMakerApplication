@@ -11,8 +11,14 @@ import static djf.settings.AppPropertyType.DEFAULT_NODE_Y;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.Optional;
 import javafx.embed.swing.SwingFXUtils;
+import javafx.event.ActionEvent;
 import javafx.scene.Node;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
+import javafx.scene.control.TextInputDialog;
 import javafx.scene.image.Image;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
@@ -22,6 +28,7 @@ import jtps.jTPS;
 import m3.data.DraggableImage;
 import m3.data.DraggableLabel;
 import m3.data.m3Data;
+import m3.data.m3State;
 import m3.transactions.AddNode_Transaction;
 import m3.transactions.ChangeTextFont_Transaction;
 import properties_manager.PropertiesManager;
@@ -50,18 +57,21 @@ public class ImageAndLabelController {
      */
     public void processAddImage() {
         // ASK THE USER TO SELECT AN IMAGE
+        m3Data data = (m3Data)app.getDataComponent();
         String imagePathToAdd = promptForImage();
         if (imagePathToAdd != null) {
+  
             DraggableImage imageViewToAdd = new DraggableImage();
             imageViewToAdd.setImagePath(imagePathToAdd);
-            PropertiesManager props = PropertiesManager.getPropertiesManager();
-            imageViewToAdd.xProperty().set(Double.parseDouble(props.getProperty(DEFAULT_NODE_X)));
-            imageViewToAdd.yProperty().set(Double.parseDouble(props.getProperty(DEFAULT_NODE_Y))); 
-            
+            data.setState(m3State.STARTING_IMAGE);
             // MAKE AND ADD THE TRANSACTION
-            addNodeTransaction(imageViewToAdd);
+            //addNodeTransaction(imageViewToAdd);
         }        
-    }    
+    }   
+    
+    public void startNewImage(int x, int y){
+        
+    }
 
     /**
      * This function helps creating a new Label.
@@ -72,11 +82,17 @@ public class ImageAndLabelController {
         m3Workspace workspace = (m3Workspace)app.getWorkspaceComponent();
         //labelToAdd.showDialog();
         PropertiesManager props = PropertiesManager.getPropertiesManager();
-        labelToAdd.xProperty().set(Double.parseDouble(props.getProperty(DEFAULT_NODE_X)));
-        labelToAdd.yProperty().set(Double.parseDouble(props.getProperty(DEFAULT_NODE_Y)));
-        labelToAdd.setFont(Font.font((String)workspace.getFontFamilyBox().getValue(),
-                (double)workspace.getFontSizeBox().getValue()));        
-        addNodeTransaction(labelToAdd);
+        String content = promptForText();
+        if(content != null){
+            labelToAdd.xProperty().set(Double.parseDouble(props.getProperty(DEFAULT_NODE_X)));
+            labelToAdd.yProperty().set(Double.parseDouble(props.getProperty(DEFAULT_NODE_Y)));
+            if((workspace.getFontFamilyBox().getValue() != null) || (workspace.getFontSizeBox().getValue() != null)){
+                labelToAdd.setFont(Font.font((String)workspace.getFontFamilyBox().getValue(),
+                                                (double)workspace.getFontSizeBox().getValue()));           
+            } //endIf
+            labelToAdd.setContent(content);
+            addNodeTransaction(labelToAdd);
+        }
     }    
     
     /**
@@ -124,4 +140,21 @@ public class ImageAndLabelController {
             return null;
         }
     }        
+   
+   private String promptForText(){
+        final Boolean isCancel = false;
+        TextInputDialog textDialog = new TextInputDialog();
+        textDialog.setTitle("Label Content Dialog");
+        textDialog.setContentText("Please enter the content for this label:");
+        Button cancel = (Button) textDialog.getDialogPane().lookupButton(ButtonType.CANCEL);
+        cancel.addEventFilter(ActionEvent.ACTION, e ->{
+          textDialog.close();
+          e.consume();
+        });        
+        Optional<String> result = textDialog.showAndWait();
+        if(result.isPresent())
+            return result.get();
+        else
+            return null;
+   }
 }

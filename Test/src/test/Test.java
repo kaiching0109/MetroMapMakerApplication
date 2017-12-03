@@ -75,8 +75,8 @@ public class Test extends Application {
 
     @Override
     public void start(Stage primaryStage) {
-        int numCols = 200 ;
-        int numRows = 200 ;
+        int numCols = 100 ;
+        int numRows = 100 ;
 
         BooleanProperty[][] switches = new BooleanProperty[numCols][numRows];
         for (int x = 0 ; x < numCols ; x++) {

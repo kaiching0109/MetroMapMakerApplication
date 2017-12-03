@@ -35,6 +35,7 @@ import static djf.settings.AppStartupConstants.FILE_PROTOCOL;
 import static djf.settings.AppStartupConstants.PATH_IMAGES;
 import djf.ui.AppMessageDialogSingleton;
 import java.util.ArrayList;
+import javafx.animation.RotateTransition;
 import javafx.application.Platform;
 import javafx.scene.Node;
 import javafx.scene.control.Alert;
@@ -42,10 +43,15 @@ import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ComboBox;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.GridPane;
+import javafx.scene.transform.Rotate;
+import javafx.scene.transform.Translate;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 import jtps.jTPS;
 import static m3.data.Draggable.LINE;
 import static m3.data.Draggable.STATION;
+import m3.data.DraggableLabel;
 import m3.data.DraggableLine;
 import m3.data.DraggableStation;
 import static m3.data.m3State.ADD_STATION_MODE;
@@ -282,7 +288,6 @@ public class MapEditController {
      */
      public void processFillingStationColor(){
          m3Workspace workspace = (m3Workspace)app.getWorkspaceComponent();
-         System.out.println((String)workspace.getStationNameBox().getValue());
          if(dataManager.searchStation((String)(workspace.getStationNameBox().getValue()))){
              DraggableStation station = (DraggableStation)dataManager.getSelectedNode();
              station.setColor(workspace.stationColorPicker.getValue());
@@ -346,7 +351,13 @@ public class MapEditController {
     */
     public void processSnappingToGrid(){
         
-    }       
+    }    
+    
+    /**
+     * 
+     */
+    
+      
  
     /**
      * This method allows user to move the selected station label.
@@ -355,18 +366,24 @@ public class MapEditController {
         m3Workspace workspace = (m3Workspace)app.getWorkspaceComponent();
         m3Data data = (m3Data)app.getDataComponent();
         String stationName = (String)workspace.getStationNameBox().getValue();        
-        if(data.searchStation(stationName)){
+        if(data.searchStation(stationName)){             
             DraggableStation selectedStation = (DraggableStation)data.getSelectedNode();
             selectedStation.moveLabel();
-        }                       
-        //get selected station and do moveLabel()
+        } //endIf
    }
   
     /**
      * This method rotates the selected station label clockwise 45 degree.
      */     
     public void processRotatingLabel(){
-        
+        m3Workspace workspace = (m3Workspace)app.getWorkspaceComponent();
+        m3Data data = (m3Data)app.getDataComponent();
+        String stationName = (String)workspace.getStationNameBox().getValue();        
+        if(data.searchStation(stationName)){
+            DraggableStation selectedStation = (DraggableStation)data.getSelectedNode();
+            double rotate = selectedStation.getNameLabel().getRotate();
+            selectedStation.getNameLabel().setRotate(rotate + 45);
+        }   
     }
     
     /**
@@ -487,23 +504,11 @@ public class MapEditController {
     /**
      * This method shows/unshows the grid.
      */
-    public void processShowingGrid(){
-        
+    public void processShowingGrid(){ 
+        m3Workspace workspace = (m3Workspace)app.getWorkspaceComponent();
+        workspace.showGrid(workspace.gridCheckBox.isSelected());
+        workspace.reloadWorkspace(dataManager);  
     }
-    
-    /**
-     * This method zooms in the workspace.
-     */
-    public void processZoomingIn(){
-        
-    }
-    
-    /**
-     * This method zooms out the workspace.
-     */      
-    public void processZoomingOut(){
-        
-    } 
 
     /**
      * This method increase the size of the map.

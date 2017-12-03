@@ -8,6 +8,8 @@ package m3.data;
 import com.sun.corba.se.impl.orbutil.graph.Graph;
 import djf.components.AppDataComponent;
 import djf.AppTemplate;
+import static djf.settings.AppPropertyType.DEFAULT_NODE_X;
+import static djf.settings.AppPropertyType.DEFAULT_NODE_Y;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -484,6 +486,23 @@ public class m3Data implements AppDataComponent {
             workspace.getStationNameBox().getItems().add(name);
         }
     }
+    
+    /**
+     * This function helps creating a new Image.
+     * 
+     * @param x  x is the x coordinate of the clicked position of the cursor.
+     * @param y  y is the y coordinate of the clicked position of the cursor.
+     */    
+    public void startNewImage(int x, int y) {   
+        DraggableImage newImage = new DraggableImage();
+        newImage.start(x, y);
+        //newImage.setImagePath(path);
+        PropertiesManager props = PropertiesManager.getPropertiesManager();
+        newImage.xProperty().set(Double.parseDouble(props.getProperty(DEFAULT_NODE_X)));
+        newImage.yProperty().set(Double.parseDouble(props.getProperty(DEFAULT_NODE_Y)));
+        newShape = newImage;
+        initNewShape();
+    } 
     
     /**
      * This function helps creating a new shape by setting all the

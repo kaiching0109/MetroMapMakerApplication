@@ -142,7 +142,6 @@ public class DraggableLine extends Polyline implements Draggable{
         int size = points.size();
         points.set(size - 2, points.get(0));
         points.set(size - 1, points.get(1));
-        System.out.println("isCircular!");
         isCircular = true;
       } else
           isCircular = false;

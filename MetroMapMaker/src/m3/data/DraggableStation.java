@@ -6,6 +6,7 @@
 package m3.data;
 
 import java.util.ArrayList;
+import javafx.beans.binding.Bindings;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Ellipse;
 import javafx.scene.shape.Shape;
@@ -32,8 +33,8 @@ public class DraggableStation extends Ellipse implements Draggable{
 	startCenterX = 0.0;
 	startCenterY = 0.0;
         nameLabel = new DraggableLabel();
-        nameLabel.xProperty().bind(this.centerXProperty().add(10));
-        nameLabel.yProperty().bind(this.centerYProperty().add(10));        
+        nameLabel.xProperty().bind(this.centerXProperty().add(25));
+        nameLabel.yProperty().bind(this.centerYProperty().add(25));
     }
 
     /**
@@ -170,6 +171,7 @@ public class DraggableStation extends Ellipse implements Draggable{
         if(name != null){
             nameLabel.setText(name);
             nameLabel.setIsBinded();
+            nameLabel.setRotate(45);
         }    
     }
     
@@ -187,6 +189,32 @@ public class DraggableStation extends Ellipse implements Draggable{
     public void setColor(Color initColor){
         stationColor = initColor;
         this.setFill(stationColor);
+    }
+    
+    public void moveLabel(){
+        int labelQuadrant = nameLabel.getQuadrant();           
+        switch (labelQuadrant) {
+            case 1:
+                nameLabel.xProperty().bind(this.centerXProperty().add(25));
+                nameLabel.yProperty().bind(this.centerYProperty().add(-25));
+                nameLabel.setQuadrant(2);
+                break;
+            case 2:
+                nameLabel.xProperty().bind(this.centerXProperty().add(-25));
+                nameLabel.yProperty().bind(this.centerYProperty().add(25));
+                nameLabel.setQuadrant(3);
+                break;
+            case 3:
+                nameLabel.xProperty().bind(this.centerXProperty().add(-25));
+                nameLabel.yProperty().bind(this.centerYProperty().add(-25));        
+                nameLabel.setQuadrant(4);
+                break;
+            default:
+                nameLabel.xProperty().bind(this.centerXProperty().add(25));
+                nameLabel.yProperty().bind(this.centerYProperty().add(25));
+                nameLabel.setQuadrant(1);
+                break;
+        }           
     }
     
     
@@ -235,13 +263,6 @@ public class DraggableStation extends Ellipse implements Draggable{
     public DraggableLabel getNameLabel(){
         return nameLabel;
     }    
-    
-    /**
-     * This method moves the label clockwisely.
-     */
-    public void moveLabel(){
-        //https://stackoverflow.com/questions/12161277/how-to-rotate-a-vertex-around-a-certain-point
-    }
     
     /**
      * The Accessor method to get the shapeType.

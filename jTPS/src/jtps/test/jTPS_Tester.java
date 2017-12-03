@@ -47,6 +47,5 @@ public class jTPS_Tester {
                 keepGoing = false;
             }
         }
-        System.out.println("GOODBYE");
     }
 }

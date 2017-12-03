@@ -79,6 +79,7 @@ public class m3Files implements AppFileComponent{
     static final String JSON_LIST_OF_NAMES = "listOfNames";
     static final String JSON_STATION_NAMES = "station_names";
     static final String JSON_LINE_POINTS = "points";
+    static final String JSON_STATION_LABEL_QUADRANT = "quadrant";
     static final String JSON_SHAPE = "shape";
     static final String JSON_TYPE = "type";
     static final String JSON_NAME = "name";
@@ -88,6 +89,7 @@ public class m3Files implements AppFileComponent{
     static final String JSON_HEIGHT = "height";
     static final String JSON_COLOR = "color";
     static final String JSON_OUTLINE_THICKNESS = "outline_thickness";
+   
     
     static final String DEFAULT_DOCTYPE_DECLARATION = "<!doctype html>\n";
     static final String DEFAULT_ATTRIBUTE_VALUE = "";
@@ -179,6 +181,7 @@ public class m3Files implements AppFileComponent{
             ArrayList<String> listOfLines = station.getListOfLines();
             JsonObject colorJson = makeJsonColorObject(station.getColor());
             double outlineThickness = station.getStrokeWidth();
+            int quadrant = station.getNameLabel().getQuadrant();
             
             //Get the list of Lines
 	    for(String line : listOfLines){
@@ -196,6 +199,7 @@ public class m3Files implements AppFileComponent{
                     .add(JSON_RADIUS, radius)
                     .add(JSON_LIST_OF_NAMES, listOfLinesArray)
 		    .add(JSON_COLOR, colorJson)
+                    .add(JSON_STATION_LABEL_QUADRANT, quadrant)
 		    .add(JSON_OUTLINE_THICKNESS, outlineThickness).build();
 	    arrayBuilder.add(stationJson);   
         }        
@@ -370,7 +374,7 @@ public class m3Files implements AppFileComponent{
             Color color = loadColor(jsonShape, JSON_COLOR);
             double radius = getDataAsDouble(jsonShape, JSON_RADIUS);
             double outlineThickness = getDataAsDouble(jsonShape, JSON_OUTLINE_THICKNESS);
-            
+            int quadrant = jsonShape.getInt(JSON_STATION_LABEL_QUADRANT);
             //SET STATION
             station.setName(stationName);
             station.setCenterX(centerX);
@@ -379,6 +383,8 @@ public class m3Files implements AppFileComponent{
             station.setColor(color);
             station.setRadius(radius);
             station.setStrokeWidth(outlineThickness);
+            station.getNameLabel().setQuadrant(quadrant - 1);
+            station.moveLabel();
             shape = station;
 	} 
         else if(type.equals(IMAGE)){

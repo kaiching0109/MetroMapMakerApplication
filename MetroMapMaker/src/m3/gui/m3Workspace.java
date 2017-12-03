@@ -67,10 +67,12 @@ import javafx.scene.control.Tooltip;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
+import javafx.scene.layout.RowConstraints;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
@@ -220,6 +222,7 @@ public class m3Workspace extends AppWorkspaceComponent{
     // THIS IS WHERE WE'LL RENDER OUR DRAWING, NOTE THAT WE
     // CALL THIS A CANVAS, BUT IT'S REALLY JUST A Pane
     Pane canvas;
+    StackPane canvasStackPane;
     ScrollPane canvasScrollPane; //USED TO SET CANVAS AS ITS CONTENT
     GridPane canvasGridPane; //USED TO SHOW THE GRID LINE
     
@@ -380,6 +383,10 @@ public class m3Workspace extends AppWorkspaceComponent{
     public Pane getCanvas() {
 	return canvas;
     }
+    
+    public GridPane getCanvasGridPane(){
+        return canvasGridPane;
+    }
         
     // HELPER SETUP METHOD
     private void initLayout() {
@@ -387,7 +394,6 @@ public class m3Workspace extends AppWorkspaceComponent{
         PropertiesManager props = PropertiesManager.getPropertiesManager();
 	// THIS WILL GO IN THE LEFT SIDE OF THE WORKSPACE
 	editToolbar = new VBox();
-        createGrid();
         
         //GUI BUTTONS ON THE TOP 
         
@@ -542,9 +548,12 @@ public class m3Workspace extends AppWorkspaceComponent{
         navigationToolbar.getChildren().addAll(row6HBox1, row6HBox2);
   
 	// WE'LL RENDER OUR STUFF HERE IN THE CANVAS
-	canvas = new Pane();
-	debugText = new Text();
+        canvasStackPane = new StackPane();
+        canvas = new Pane();
+        canvasGridPane = new GridPane();
+        debugText = new Text();
 	canvas.getChildren().add(debugText);
+        
 	debugText.setX(100);
 	debugText.setY(100);
 	
@@ -556,27 +565,47 @@ public class m3Workspace extends AppWorkspaceComponent{
 	workspace = new BorderPane();
         editToolScrollbar = new ScrollPane();
 	((BorderPane)workspace).setLeft(editToolScrollbar);
-       // canvasScrollPane = new ScrollPane();
-        //canvasScrollPane.setContent(canvas);
         data.setM3Nodes(canvas.getChildren());
-	((BorderPane)workspace).setCenter(canvas);           
+        canvasStackPane.getChildren().addAll(canvasGridPane, canvas);
+	((BorderPane)workspace).setCenter(canvasStackPane); 
+        createGrid();
+        
     }
     
     // USED TO CREATE THE GRID
-    private GridPane createGrid(){
-        return canvasGridPane;
+    public void createGrid(){
+        int rows = 20;
+        int columns = 30;
+        for(int i = 0; i < columns; i++) {
+            ColumnConstraints column = new ColumnConstraints(20);
+            column.setPercentWidth(5);
+            column.setHgrow(Priority.ALWAYS);
+            column.setFillWidth(true);
+            canvasGridPane.getColumnConstraints().add(column);
+            
+        }
+        for(int i = 0; i < rows; i++) {
+            RowConstraints row = new RowConstraints(20);
+            row.setPercentHeight(5);
+            row.setVgrow(Priority.ALWAYS);
+            row.setFillHeight(true);
+            canvasGridPane.getRowConstraints().add(row);
+        }
+        
+        canvasGridPane.setFillWidth(canvasStackPane, true);
+        canvasGridPane.setFillHeight(canvasStackPane, true);
+        canvasGridPane.prefHeightProperty().bind(((BorderPane)workspace).heightProperty());
+        canvasGridPane.prefWidthProperty().bind(((BorderPane)workspace).widthProperty()); 
     }
     
-    private void setGrid(boolean bool){
-        
-    }
-       
-    private void setWorkspaceMoveable(){
-        //https://stackoverflow.com/questions/38604780/javafx-zoom-scroll-in-scrollpane
-    }
     
-    private void setWorkspaceZoomable(){
-        
+    public void showGrid(Boolean bool){
+        if(bool){
+            canvasGridPane.setStyle("-fx-grid-lines-visible: true");
+        }     
+        else{
+            canvasGridPane.setStyle("-fx-grid-lines-visible: false");
+        }    
     }
     
     /**
@@ -606,16 +635,25 @@ public class m3Workspace extends AppWorkspaceComponent{
 	MapEditController = new MapEditController(app);
         // MAKE THE IMAGE AND LABEL CONTROLLER
         ImageAndLabelController ImageAndTextController = new ImageAndLabelController(app);
+        displayController displayController = new displayController(canvasStackPane, canvas);
         
         // CONNECT ThE SCENE WITH "WASD" BUTTON
         scene.setOnKeyPressed(new EventHandler<KeyEvent>() {
              @Override
             public void handle(KeyEvent event) {
                 switch (event.getCode()) {
-                    case W:  break;
-                    case S:  break;
-                    case A:  break;
-                    case D:  break;
+                    case W:  
+                        displayController.move("up");
+                        break;
+                    case S: 
+                        displayController.move("down");
+                        break;
+                    case A:  
+                        displayController.move("left");
+                        break;             
+                    case D:
+                        displayController.move("right");
+                        break;                    
                 }
             }
         });
@@ -765,11 +803,11 @@ public class m3Workspace extends AppWorkspaceComponent{
 	});  
         
 	zoomInButton.setOnAction(e->{
-	    MapEditController.processZoomingIn();
+	    displayController.zoom(1.1);
 	}); 
         
 	zoomOutButton.setOnAction(e->{
-	    MapEditController.processZoomingOut();
+	    displayController.zoom(1/1.1);
 	});  
         
 	mapSizeIncreaseButton.setOnAction(e->{
@@ -795,9 +833,6 @@ public class m3Workspace extends AppWorkspaceComponent{
 	canvas.setOnMouseDragged(e->{
 	    canvasController.processCanvasMouseDragged((int)e.getX(), (int)e.getY());
 	});
-        
-        setWorkspaceMoveable();
-        setWorkspaceZoomable();
         
     }
 

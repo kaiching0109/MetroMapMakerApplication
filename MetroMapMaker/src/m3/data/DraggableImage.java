@@ -5,6 +5,7 @@
  */
 package m3.data;
 
+import static djf.settings.AppStartupConstants.FILE_PROTOCOL;
 import javafx.scene.image.Image;
 import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Rectangle;
@@ -127,7 +128,7 @@ public class DraggableImage extends Rectangle implements Draggable{
      */    
     public void setImage(){
          if(imagePath != null)
-            setFill(new ImagePattern(new Image(imagePath)));
+            setFill(new ImagePattern(new Image(FILE_PROTOCOL + imagePath)));
     }
     
     /**

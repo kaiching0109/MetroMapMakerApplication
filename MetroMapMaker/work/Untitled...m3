@@ -1,0 +1,51 @@
+
+{
+    "title":"Metro Map Maker - sdfsdfsdf",
+    "shapes":[
+        {
+            "type":"LINE",
+            "name":"`1111",
+            "circular":false,
+            "points":[
+                {
+                    "points":73.0
+                },
+                {
+                    "points":211.0
+                },
+                {
+                    "points":351.0
+                },
+                {
+                    "points":251.0
+                }
+            ],
+            "listOfNames":[
+            ],
+            "color":{
+                "red":0.0,
+                "green":0.0,
+                "blue":0.0,
+                "alpha":1.0
+            },
+            "outline_thickness":5.0
+        },
+        {
+            "type":"STATION",
+            "name":"1",
+            "x":340.0,
+            "y":87.0,
+            "radius":15.0,
+            "listOfNames":[
+            ],
+            "color":{
+                "red":0.0,
+                "green":0.0,
+                "blue":0.0,
+                "alpha":1.0
+            },
+            "quadrant":1,
+            "outline_thickness":1.0
+        }
+    ]
+}

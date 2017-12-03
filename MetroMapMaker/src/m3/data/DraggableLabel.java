@@ -20,6 +20,7 @@ public class DraggableLabel extends Text implements Draggable{
     double startY;
     String text;
     Boolean isBinded;
+    int quadrant; 
 
     /**
      * Contrustor for initialing DraggableLabel with default data.
@@ -29,6 +30,7 @@ public class DraggableLabel extends Text implements Draggable{
         setOpacity(1.0);
         setFill(Color.BLACK);
         isBinded = false;
+        quadrant = 1;
     }
     
     /**
@@ -106,6 +108,13 @@ public class DraggableLabel extends Text implements Draggable{
     public void setIsBinded(){
         isBinded = true;
     }    
+    
+    public void setQuadrant(int initQuadrant){
+        if(initQuadrant > 0 && initQuadrant <= 4)
+            quadrant = initQuadrant;
+        else
+            quadrant = 4;
+    }
  
     /**
      * Accessor method that is used to get the content of this DraggableLabel.
@@ -156,6 +165,10 @@ public class DraggableLabel extends Text implements Draggable{
     @Override
     public String getNodeType() {
 	return LABEL;
+    }
+    
+    public int getQuadrant(){
+        return quadrant;
     }
  
     /**

@@ -68,6 +68,8 @@ public class CanvasController {
             dataManager.startNewLine(x, y);
         } else if (dataManager.isInState(m3State.ADDING_STATION)) {
             dataManager.startNewStation(x, y);
+        } else if (dataManager.isInState(m3State.STARTING_IMAGE)){
+            dataManager.startNewImage(x, y);
         } else if (dataManager.isInState(m3State.SIZING_SHAPE)){
             if(dataManager.getNewShape() instanceof DraggableLine){
                 DraggableLine newLine = (DraggableLine) dataManager.getNewShape();
