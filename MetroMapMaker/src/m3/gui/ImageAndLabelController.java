@@ -20,6 +20,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.TextInputDialog;
 import javafx.scene.image.Image;
+import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
@@ -87,8 +88,8 @@ public class ImageAndLabelController {
             labelToAdd.xProperty().set(Double.parseDouble(props.getProperty(DEFAULT_NODE_X)));
             labelToAdd.yProperty().set(Double.parseDouble(props.getProperty(DEFAULT_NODE_Y)));
             if((workspace.getFontFamilyBox().getValue() != null) || (workspace.getFontSizeBox().getValue() != null)){
-                labelToAdd.setFont(Font.font((String)workspace.getFontFamilyBox().getValue(),
-                                                (double)workspace.getFontSizeBox().getValue()));           
+                labelToAdd.setFont(workspace.getCurrentFontSettings());    
+                labelToAdd.setFill(workspace.getFontColorPicker().getValue());
             } //endIf
             labelToAdd.setContent(content);
             addNodeTransaction(labelToAdd);
@@ -108,7 +109,17 @@ public class ImageAndLabelController {
             jTPS tps = app.getTPS();
             tps.addTransaction(transaction);
         }
-    }        
+    } 
+    
+    public void processChangeFontColor(Color color){
+        m3Data data = (m3Data)app.getDataComponent();
+        if(data.isTextSelected()){
+            Text selectedText = (Text)data.getSelectedNode();
+            selectedText.setFill(color);
+            m3Workspace workspace = (m3Workspace)app.getWorkspaceComponent();
+            workspace.updateLabelColorPickerStyle(color);
+        } //endIf
+    }
     
     private void addNodeTransaction(Node nodeToAdd) {
         m3Data data = (m3Data)app.getDataComponent();

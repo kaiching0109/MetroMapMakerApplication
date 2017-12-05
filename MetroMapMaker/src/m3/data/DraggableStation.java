@@ -215,7 +215,7 @@ public class DraggableStation extends Ellipse implements Draggable{
                 nameLabel.setQuadrant(1);
                 break;
         }           
-    }
+    } 
     
     
     /**
@@ -309,6 +309,23 @@ public class DraggableStation extends Ellipse implements Draggable{
      */        
     public ArrayList<String> getListOfLines(){
         return listOfLines;
+    }
+    
+   @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        DraggableStation other = (DraggableStation) obj;
+        
+        if (!name.equals(other.name))
+            if(stationColor == other.getColor())
+            if(radius != other.getRadius())
+                return false;
+        return true;
     }
     
 }

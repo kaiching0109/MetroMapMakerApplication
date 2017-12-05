@@ -484,7 +484,7 @@ public class m3Data implements AppDataComponent {
             workspace.getLineNameBox().getItems().add(name);
         } else if (type.equals(STATION)){
             workspace.getStationNameBox().getItems().add(name);
-        }
+        }               
     }
     
     /**
@@ -687,7 +687,7 @@ public class m3Data implements AppDataComponent {
         } //endIf
     }
     
-    private void sortStations(DraggableLine line){
+    public void sortStations(DraggableLine line){
         HashMap<String, Integer> hashMap = new HashMap<String, Integer>();
         ArrayList<String> listOfStations = line.getListOfStations();
         for(int i = 0; i < listOfStations.size(); i++){

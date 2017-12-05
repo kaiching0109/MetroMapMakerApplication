@@ -94,8 +94,10 @@ import static m3.css.m3Style.CLASS_EDIT_TOOLBAR_ROW;
 import static m3.css.m3Style.CLASS_FIND_BUTTON_SIZE;
 import static m3.css.m3Style.CLASS_RENDER_CANVAS;
 import static m3.css.m3Style.ROUND_BUTTON;
+import m3.data.DraggableLabel;
 import m3.data.DraggableLine;
 import m3.data.DraggableStation;
+import m3.data.MetroGraphController;
 import m3.data.m3Data;
 import static m3.data.m3Data.WHITE_HEX;
 import m3.data.m3State;
@@ -239,6 +241,8 @@ public class m3Workspace extends AppWorkspaceComponent{
     
     // FOR DISPLAYING DEBUG STUFF
     Text debugText;
+    final String fontSizePromptText = "Font Size";
+    final String fontStylePromptText = "Font Style";
 
     /**
      * Constructor for initializing the workspace, note that this constructor
@@ -510,6 +514,7 @@ public class m3Workspace extends AppWorkspaceComponent{
 
         row5HBox1 = new HBox();
         fontLabel = new Label("Font");
+        colorHexForFont = new Text();
         fontColorPicker = new ColorPicker(Color.valueOf(WHITE_HEX)); 
         space = new Pane();
         row4HBox1.setHgrow(space, Priority.ALWAYS); 
@@ -614,8 +619,8 @@ public class m3Workspace extends AppWorkspaceComponent{
      * @return newFont newFont is the changed font
      */
     public Font getCurrentFontSettings() {
-        String fontFamily = fontFamilyBox.getSelectionModel().getSelectedItem().toString();
-        int fontSize = Integer.valueOf(fontFamilyBox.getSelectionModel().getSelectedItem().toString());
+        String fontFamily = (String)fontFamilyBox.getSelectionModel().getSelectedItem();
+        int fontSize = Integer.valueOf(fontSizeBox.getSelectionModel().getSelectedItem().toString());
         FontWeight weight = FontWeight.NORMAL;
         if (boldButton.isPressed()) weight = FontWeight.BOLD;
         FontPosture posture = FontPosture.REGULAR;
@@ -635,6 +640,7 @@ public class m3Workspace extends AppWorkspaceComponent{
 	MapEditController = new MapEditController(app);
         // MAKE THE IMAGE AND LABEL CONTROLLER
         ImageAndLabelController ImageAndTextController = new ImageAndLabelController(app);
+        MetroGraphController metroGraphController = new MetroGraphController(app.getDataComponent());
         displayController displayController = new displayController(canvasStackPane, canvas);
         
         // CONNECT ThE SCENE WITH "WASD" BUTTON
@@ -657,7 +663,8 @@ public class m3Workspace extends AppWorkspaceComponent{
                 }
             }
         });
-        
+        this.setFontSizeBox();
+        this.setFontFamilyBox();
         // PROMT TO SAVE FOR EXITTING APPLICATION
         stage.setOnCloseRequest(e->{
             //if unsave
@@ -754,8 +761,13 @@ public class m3Workspace extends AppWorkspaceComponent{
 	    MapEditController.processSearchingSelection2();
 	}); 
         
-	routeFindingButton.setOnAction(e->{
-	    MapEditController.processFindingRoute();
+	routeFindingButton.setOnAction(e->{ 
+            m3Data data = (m3Data)app.getDataComponent();
+            data.searchLine(stationSearchingBar1.getItems().toString());
+            DraggableStation station1 = (DraggableStation)data.getSelectedNode();
+            data.searchLine(stationSearchingBar2.getItems().toString());
+            DraggableStation station2 = (DraggableStation)data.getSelectedNode();
+	    metroGraphController.processFindingRoute(station1, station2);
 	}); 
            
 	bgColorPicker.setOnAction(e->{
@@ -779,7 +791,7 @@ public class m3Workspace extends AppWorkspaceComponent{
 	}); 
         
 	fontColorPicker.setOnAction(e->{
-	    ImageAndTextController.processChangeFont();
+	    ImageAndTextController.processChangeFontColor(fontColorPicker.getValue());
 	});         
         
 	boldButton.setOnAction(e->{
@@ -857,8 +869,15 @@ public class m3Workspace extends AppWorkspaceComponent{
                 stationRadiusSlider.setValue(station.getRadius());
                 stationNameBox.setValue(station.getName());
                 stationColorPicker.setValue(station.getColor());
-                colorHexForStation.setText(station.getColor().toString());
+                //colorHexForStation.setText(station.getColor().toString());
                 updateStationColorPickerStyle(station.getColor());   
+            } else if(node instanceof DraggableLabel){
+                DraggableLabel label = (DraggableLabel)node;
+                fontFamilyBox.setValue(label.getFont().getFamily());
+                fontSizeBox.setValue(((int)label.getFont().getSize()) + "");
+                fontColorPicker.setValue((Color)label.getFill());   
+                //colorHexForFont.setText(((Color)label.getFill()).toString());
+                updateLabelColorPickerStyle(((Color)label.getFill())); 
             }
 	}
     }
@@ -891,15 +910,7 @@ public class m3Workspace extends AppWorkspaceComponent{
         );
        // colorHexForBackground.setText(WHITE_HEX);
         
-        fontColorPicker.setStyle(                
-                "-fx-background-radius: 50px; " +
-                "-fx-min-width: 50px; " +
-                "-fx-min-height: 50px; " +
-                "-fx-max-width: 50px; " +
-                "-fx-max-height: 50px;" +
-                "-fx-background-color: #ffffff;"
-        );        
-        //colorHexForFont.setText(WHITE_HEX);
+       updateLabelColorPickerStyle(Color.valueOf(WHITE_HEX));
         
         editToolbar.getChildren().add(metroLinesToolbar);
         editToolbar.getChildren().add(metroStationsToolbar);
@@ -954,6 +965,18 @@ public class m3Workspace extends AppWorkspaceComponent{
              colorHexForStation.setText(color.toString());
     }
     
+    public void updateLabelColorPickerStyle(Color color){
+             fontColorPicker.setStyle(                    
+                    "-fx-background-radius: 50px; " +
+                    "-fx-min-width: 50px; " +
+                    "-fx-min-height: 50px; " +
+                    "-fx-max-width: 50px; " +
+                    "-fx-max-height: 50px;" +
+                    "-fx-background-color: " +   color.toString().replace("0x", "#") + " ;" 
+             );        
+             colorHexForFont.setText(color.toString());        
+    }
+    
     /**
      * This function reloads all the controls for editing logos
      * the workspace.
@@ -989,7 +1012,22 @@ public class m3Workspace extends AppWorkspaceComponent{
         updateStationColorPickerStyle(Color.WHITE);
         updateLineEditButtonStyle(Color.WHITE);
         lineNameBox.getItems().clear();
-        stationNameBox.getItems().clear();
+        stationNameBox.getItems().clear();    
+    }
+    
+    public void setFontSizeBox() {
+        fontSizeBox.setPromptText(fontSizePromptText);
+        //fontSizeBox.setEditable(true);
+        for (int i = 1; i <= 30; i++) {
+            fontSizeBox.getItems().add(i + "");
+        }
+    }
+
+    public void setFontFamilyBox() {
+        fontFamilyBox.setPromptText(fontStylePromptText);
+        //fontFamilyBox.setEditable(false);
+        fontFamilyBox.getItems().addAll("Avenir", "Cochin","Courier", "Lucida Bright", "Trebuchet MS");
         
     }
+    
 }
