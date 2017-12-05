@@ -454,16 +454,16 @@ public class m3Data implements AppDataComponent {
         newStation.setName(stationName);
         newStation.setColor(InfoRequireDialogSingleton.getSingleton().getColorPicker().getValue());
         newStation.setStroke(STROKE_COLOR);
+         m3Workspace workspace = (m3Workspace)app.getWorkspaceComponent();
         
-        /*
         workspace.getStationNameBox().getItems().add(stationName);
         DraggableLabel nameLabel = newStation.getNameLabel();
         nameLabel.setOnMouseClicked(e->{
             workspace.loadSelectedNodeSettings(newStation);
         });        
         addNode(newStation.getNameLabel());
-        */
-        setStationLabel(newStation);
+        
+       // setStationLabel(newStation);
         updateShapeComboBox(stationName, newStation.getNodeType());
 	newShape = newStation;
 	initNewShape();
@@ -744,6 +744,7 @@ public class m3Data implements AppDataComponent {
            DraggableLine lineToAdd = (DraggableLine)nodeToAdd;
            m3Lines.add(lineToAdd);
         }    
+        System.out.println(app.getGUI().getWindow().toString());
     }
 
     /**

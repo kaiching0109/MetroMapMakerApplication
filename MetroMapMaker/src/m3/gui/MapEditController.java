@@ -306,8 +306,8 @@ public class MapEditController {
         m3Workspace workspace = (m3Workspace)app.getWorkspaceComponent();
         // CHANGE THE CURSOR
         Scene scene = app.getGUI().getPrimaryScene(); 
-        InfoRequireDialogSingleton infoDialog = InfoRequireDialogSingleton.getSingleton();
-        infoDialog.show("Add New Station", "");  
+        InfoRequireDialogSingleton infoDialog = InfoRequireDialogSingleton.getSingleton(); 
+        infoDialog.show("Add New Station", "");
         scene.setCursor(Cursor.CROSSHAIR);
         // CHANGE THE STATE
         String name = infoDialog.getName();
